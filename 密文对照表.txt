@@ -1,4 +1,5 @@
 public：
+	钓心				Fisheart		钓心uxf lsai海xsvnt
 	继承爱心			InheritLove		inheai心uai jtknaivxf
 
 阳师：					Sun			达knunt 大heknvxf
@@ -6,6 +7,8 @@ public：
 	阳师沙：			SunSand(SS)
 	阳师河：			SunRiver(SR)
 		钓心司机啃		FisheartDriverOp	钓心uxf lsai海xsvnt ssknwxf jtknuai
+		钓海			FishSea			钓knai海uai dikngfvnt
+		钓海黄埔啃		FishSeaMilitaryOp	钓knai海uai dikngfvnt di4海wxf 大4uxf he4ai海vnt ssknwxf
 	阳师海：			SunOcean(SO)
 
 红色：					Red			6gfknunt jtkn海xsvai 小gf海wnt
