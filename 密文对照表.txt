@@ -1,21 +1,21 @@
 public：
-	继承爱心			inheai心uai jtknaivxf
+	继承爱心			InheritLove		inheai心uai jtknaivxf
 
-阳师：					达knunt 大heknvxf
-	阳师房：
-	阳师沙：
-	阳师河：
-		钓心司机啃		钓心uxf lsai海xsvnt ssknwxf jtknuai
-	阳师海：
+阳师：					Sun			达knunt 大heknvxf
+	阳师房：			SunHouse(SH)
+	阳师沙：			SunSand(SS)
+	阳师河：			SunRiver(SR)
+		钓心司机啃		FisheartDriverOp	钓心uxf lsai海xsvnt ssknwxf jtknuai
+	阳师海：			SunOcean(SO)
 
-红色：					6gfknunt jtkn海xsvai 小gf海wnt
-	红色房：
-	红色沙：
-	红色河：
-	红色海：
+红色：					Red			6gfknunt jtkn海xsvai 小gf海wnt
+	红色房：			RedHouse(RH)
+	红色沙：			RedSand(RS)
+	红色河：			RedRiver(RR)
+	红色海：			RedOcean(RO)
 
-宫中：					64uss 大heknvxf
-	宫中房：
-	宫中沙：
-	宫中河：
-	宫中海：
+宫中：					Pal			64uss 大heknvxf
+	宫中房：			PalHouse(PH)
+	宫中沙：			PalSand(PS)
+	宫中河：			PalRiver(PR)
+	宫中海：			PalOcean(PO)
