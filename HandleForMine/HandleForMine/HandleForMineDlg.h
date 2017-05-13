@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "afxwin.h"
 
 
 // CHandleForMineDlg ¶Ô»°¿ò
@@ -30,4 +31,11 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+
+public:
+	afx_msg void OnBnClickedOk();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+
+protected:
+	bool m_bRunning;
 };
