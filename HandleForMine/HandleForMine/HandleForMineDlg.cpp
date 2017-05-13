@@ -116,8 +116,21 @@ void CHandleForMineDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	//*testtemp
 	DWORD dwTestTime = timeGetTime();
-	WCHAR wszTestTime[100];
-	swprintf(wszTestTime, sizeof(wszTestTime), _T("%d"), dwTestTime);
-	SetDlgItemText(IDC_STATIC, wszTestTime);
+
+	unsigned char uRed = 0, uGreen = 0, uBlue = 0;
+	HDC hdcScreen = CreateDC(TEXT("DISPLAY"), NULL, NULL, NULL);
+	POINT ptTestMouse;
+	if (hdcScreen && GetCursorPos(&ptTestMouse))
+	{
+		COLORREF dwTestColor = GetPixel(hdcScreen, ptTestMouse.x, ptTestMouse.y);
+		uRed = GetRValue(dwTestColor);
+		uGreen = GetGValue(dwTestColor);
+		uBlue = GetBValue(dwTestColor);
+	}
+	DeleteDC(hdcScreen);
+
+	WCHAR wszTest[100];
+	swprintf(wszTest, sizeof(wszTest), _T("%d %d %d %d"), dwTestTime, uRed, uGreen, uBlue);
+	SetDlgItemText(IDC_STATIC, wszTest);
 	//*/
 }
