@@ -93,6 +93,31 @@ HCURSOR CHandleForMineDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+bool CHandleForMineDlg::GetKGClientRect(RECT& rcClient)
+{
+	HWND hKG = ::FindWindow(_T("KGWin32App"), NULL);
+	if (hKG)
+	{
+		if (::GetClientRect(hKG, &rcClient))
+		{
+			POINT ptClientLT, ptClientRB;
+			ptClientLT.x = rcClient.left;
+			ptClientLT.y = rcClient.top;
+			ptClientRB.x = rcClient.right;
+			ptClientRB.y = rcClient.bottom;
+			if (::ClientToScreen(hKG, &ptClientLT) && ::ClientToScreen(hKG, &ptClientRB))
+			{
+				rcClient.left = ptClientLT.x;
+				rcClient.top = ptClientLT.y;
+				rcClient.right = ptClientRB.x;
+				rcClient.bottom = ptClientRB.y;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 
 
 void CHandleForMineDlg::OnBnClickedOk()
@@ -100,9 +125,16 @@ void CHandleForMineDlg::OnBnClickedOk()
 	//CDialogEx::OnOK();
 	if (!m_bRunning)
 	{
-		m_bRunning = true;
-		SetTimer(0, MINE_TIME_TICK, NULL);
-		SetDlgItemText(IDOK, _T("Õ£÷π"));
+		RECT rcClient;
+		if (GetKGClientRect(rcClient))
+		{
+			//*≤‚ ‘¡Ÿ ±
+			m_rcJHTime = rcClient;
+			//*/
+			m_bRunning = true;
+			SetTimer(0, MINE_TIME_TICK, NULL);
+			SetDlgItemText(IDOK, _T("Õ£÷π"));
+		}
 	}
 	else
 	{
@@ -114,15 +146,14 @@ void CHandleForMineDlg::OnBnClickedOk()
 
 void CHandleForMineDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	//*testtemp
+	//*≤‚ ‘¡Ÿ ±
 	DWORD dwTestTime = timeGetTime();
 
 	unsigned char uRed = 0, uGreen = 0, uBlue = 0;
 	HDC hdcScreen = CreateDC(TEXT("DISPLAY"), NULL, NULL, NULL);
-	POINT ptTestMouse;
-	if (hdcScreen && GetCursorPos(&ptTestMouse))
+	if (hdcScreen)
 	{
-		COLORREF dwTestColor = GetPixel(hdcScreen, ptTestMouse.x, ptTestMouse.y);
+		COLORREF dwTestColor = GetPixel(hdcScreen, m_rcJHTime.left + 10, m_rcJHTime.top + 10);
 		uRed = GetRValue(dwTestColor);
 		uGreen = GetGValue(dwTestColor);
 		uBlue = GetBValue(dwTestColor);

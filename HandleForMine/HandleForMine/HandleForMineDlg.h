@@ -32,10 +32,13 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 
+	bool GetKGClientRect(RECT& rcClient);
+
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 
 protected:
+	RECT m_rcJHTime;
 	bool m_bRunning;
 };
