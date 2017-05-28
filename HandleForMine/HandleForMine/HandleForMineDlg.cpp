@@ -31,6 +31,7 @@ CHandleForMineDlg::CHandleForMineDlg(CWnd* pParent /*=NULL*/)
 void CHandleForMineDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_EDIT1, m_edtScale);
 }
 
 BEGIN_MESSAGE_MAP(CHandleForMineDlg, CDialogEx)
@@ -118,6 +119,28 @@ bool CHandleForMineDlg::GetKGClientRect(RECT& rcClient)
 	return false;
 }
 
+bool CHandleForMineDlg::GetDBMSTRect(RECT& rcST)
+{
+	float fWidth = (float)(rcST.right - rcST.left);
+	float fHeight = (float)(rcST.bottom - rcST.top);
+
+	CString scaleStr;
+	int iScaleLength = GetDlgItemText(IDC_EDIT1, scaleStr);
+	if (iScaleLength <= 0 || iScaleLength > 10)
+		return false;
+	float fScale = (float)_wtof(scaleStr.GetString());
+
+	RECT rcResult;
+	float fHalfSTWidth = fWidth * (156.0f / 1440.0f) * fScale;
+	rcResult.left = (LONG)(fWidth / 2.0f - fHalfSTWidth) + rcST.left;
+	rcResult.top = (LONG)(fHeight / 2.0f - fHeight * (266.0f / 900.0f) * fScale) + rcST.top;
+	rcResult.right = rcResult.left + (LONG)fHalfSTWidth * 2;
+	rcResult.bottom = 32;//TODOJK
+
+	rcST = rcResult;
+	return true;
+}
+
 
 
 void CHandleForMineDlg::OnBnClickedOk()
@@ -125,16 +148,20 @@ void CHandleForMineDlg::OnBnClickedOk()
 	//CDialogEx::OnOK();
 	if (!m_bRunning)
 	{
-		RECT rcClient;
-		if (GetKGClientRect(rcClient))
-		{
-			//*²âÊÔÁÙÊ±
-			m_rcJHTime = rcClient;
-			//*/
-			m_bRunning = true;
-			SetTimer(0, MINE_TIME_TICK, NULL);
-			SetDlgItemText(IDOK, _T("Í£Ö¹"));
-		}
+		RECT rc;
+		if (!GetKGClientRect(rc))
+			return;
+
+		if (!GetDBMSTRect(rc))
+			return;
+
+		m_rcJHTime = rc;
+		//*²âÊÔÁÙÊ±
+		this->SetWindowPos(NULL, m_rcJHTime.left, m_rcJHTime.top, 0, 0, SWP_NOSIZE);
+		//*/
+		m_bRunning = true;
+		SetTimer(0, MINE_TIME_TICK, NULL);
+		SetDlgItemText(IDOK, _T("Í£Ö¹"));
 	}
 	else
 	{
@@ -153,7 +180,7 @@ void CHandleForMineDlg::OnTimer(UINT_PTR nIDEvent)
 	HDC hdcScreen = CreateDC(TEXT("DISPLAY"), NULL, NULL, NULL);
 	if (hdcScreen)
 	{
-		COLORREF dwTestColor = GetPixel(hdcScreen, m_rcJHTime.left + 10, m_rcJHTime.top + 10);
+		COLORREF dwTestColor = GetPixel(hdcScreen, m_rcJHTime.left + 60, m_rcJHTime.top + 10);
 		uRed = GetRValue(dwTestColor);
 		uGreen = GetGValue(dwTestColor);
 		uBlue = GetBValue(dwTestColor);

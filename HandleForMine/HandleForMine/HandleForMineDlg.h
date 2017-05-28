@@ -33,12 +33,14 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	bool GetKGClientRect(RECT& rcClient);
+	bool GetDBMSTRect(RECT& rcST);
 
 public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 
 protected:
+	CEdit m_edtScale;
 	RECT m_rcJHTime;
 	bool m_bRunning;
 };
