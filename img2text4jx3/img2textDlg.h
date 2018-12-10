@@ -44,9 +44,12 @@ public:
 	HDC hScrDC;
 
 	BOOL Cimg2textDlg::OCRImageFile( CString Name);//OCR
+	const TCHAR* Cimg2textDlg::GetCachePath();
  
 	CPictureEx m_pic2;
 
 
 	CString m_text2;
+
+	std::string m_strCachePath;
 };

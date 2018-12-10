@@ -10,6 +10,8 @@
 
 #include "ScreenShot.h"
 
+#include <set>
+
  
 
 
@@ -122,7 +124,7 @@ pBuf[dwFileLen] = 0;
 file.Read(pBuf,dwFileLen); 
 file.Close();
 */
-	 SetTimer(0,500,0);
+	 SetTimer(0,300,0);
 
 	// TODO: 在此添加额外的初始化代码
 	
@@ -231,7 +233,8 @@ void Cimg2textDlg::OnBnClickedOk()
 	p.x= 595-width/2;
 	p.y= 331-height/2;
 
-	char file[]="c://b.bmp";
+	char file[100];
+	memcpy(file, GetCachePath(), 100);
 	if (s.capture_and_savetobmp(p,	//left top
 		p.x+width,p.y+height //right bottom
 		, file ) )
@@ -318,7 +321,8 @@ void Cimg2textDlg::OnTimer(UINT nIDEvent)
 
 	*/
 
-	char file[]="c://b.bmp";
+	char file[100];
+	memcpy(file, GetCachePath(), 100);
 	if (s.capture_and_savetobmp(p,	//left top
 		p.x+width,p.y+height //right bottom
 		, file ) )
@@ -357,4 +361,36 @@ void Cimg2textDlg::OnTimer(UINT nIDEvent)
 //	delete buff;
 
 	CDialog::OnTimer(nIDEvent);
+}
+
+const TCHAR* Cimg2textDlg::GetCachePath()
+{
+	if (m_strCachePath.empty())
+	{
+		TCHAR szBuf[101];
+		memset(szBuf, 0, 101);
+		GetLogicalDriveStrings(101, szBuf);
+
+		std::set<TCHAR> setDrives;
+		int i = 0;
+		do
+		{
+			setDrives.insert(*(szBuf + i));
+			do
+			{
+				i++;
+			} while (*(szBuf + i) != 0);
+			i++;
+		} while (i < 100 && *(szBuf + i) != 0);
+
+		TCHAR cDrive = 'N';
+		for (; cDrive >= 'D'; --cDrive)
+		{
+			if (setDrives.find(cDrive) != setDrives.end())
+				break;
+		}
+		m_strCachePath = "://b.bmp";
+		m_strCachePath = cDrive + m_strCachePath;
+	}
+	return m_strCachePath.c_str();
 }
