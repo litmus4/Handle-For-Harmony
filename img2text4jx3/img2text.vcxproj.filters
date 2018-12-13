@@ -42,6 +42,9 @@
     <ClCompile Include="PictureEx.cpp">
       <Filter>头文件</Filter>
     </ClCompile>
+    <ClCompile Include="Workbench.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyImage.h">
@@ -130,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="imginclude\xmemfile.h">
       <Filter>ximage</Filter>
+    </ClInclude>
+    <ClInclude Include="Workbench.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
