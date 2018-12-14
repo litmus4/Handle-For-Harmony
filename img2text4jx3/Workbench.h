@@ -3,8 +3,6 @@
 #include <string>
 #include <vector>
 
-class IDoc;
-
 class IBench
 {
 public:
@@ -17,9 +15,14 @@ public:
 	virtual void End(){}
 
 protected:
+	virtual void Reset(){}
+
 	std::string m_strImagePath;
 	std::vector<std::string*> m_vecCacheTexts;
 };
+
+class IDoc;
+class IImages;
 
 class DocBench : public IBench
 {
@@ -33,5 +36,8 @@ public:
 	void End();
 
 protected:
+	void Reset();
+
 	IDoc* m_pDoc;
+	IImages* m_pImages;
 };
