@@ -7,6 +7,7 @@
 #include "PictureEx.h"
 
 
+class IBench;
 // Cimg2textDlg ¶Ô»°¿ò
 class Cimg2textDlg : public CDialog
 {
@@ -47,9 +48,9 @@ public:
 	const TCHAR* Cimg2textDlg::GetCachePath();
  
 	CPictureEx m_pic2;
-
-
 	CString m_text2;
+
+	IBench* m_pBench;
 
 	std::string m_strCachePath;
 };
