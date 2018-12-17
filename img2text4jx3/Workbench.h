@@ -1,7 +1,7 @@
 #pragma once
 #include "afxwin.h"
 #include <string>
-#include <vector>
+#include <map>
 
 class IBench
 {
@@ -10,15 +10,18 @@ public:
 	virtual ~IBench();
 
 	virtual bool LoadImage(const TCHAR* szImagePath);
-	virtual int RunOCR() = 0;
+	virtual int RunOCR();
 	virtual const TCHAR* GetTextByIndex(int iIndex) = 0;
-	virtual void End(){}
+	virtual void End();
+
+	const TCHAR* GetCacheText(int iIndex);
+	void SetCacheText(int iIndex, const std::string& strText);
 
 protected:
-	virtual void Reset(){}
+	virtual void Reset();
 
 	std::string m_strImagePath;
-	std::vector<std::string*> m_vecCacheTexts;
+	std::map<int, std::string> m_mapCacheTexts;
 };
 
 class IDoc;
