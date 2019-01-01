@@ -7,8 +7,10 @@
 #include ".\img2textdlg.h"
 
 #include "Picture.h"
-
+#include "Workbench.h"
 #include "ScreenShot.h"
+
+#include <set>
 
  
 
@@ -54,6 +56,7 @@ Cimg2textDlg::Cimg2textDlg(CWnd* pParent /*=NULL*/)
 	, m_x(0)
 	, m_y(0)
 	, m_text2(_T(""))
+	, m_pBench(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -122,7 +125,8 @@ pBuf[dwFileLen] = 0;
 file.Read(pBuf,dwFileLen); 
 file.Close();
 */
-	 SetTimer(0,500,0);
+	 SetTimer(0,300,0);
+	 m_pBench = new DocBench();//TODOJK 用控件可选
 
 	// TODO: 在此添加额外的初始化代码
 	
@@ -180,24 +184,17 @@ HCURSOR Cimg2textDlg::OnQueryDragIcon()
 
 BOOL Cimg2textDlg::OCRImageFile( CString Name)//OCR
 { 
-	IDoc *pDoc = new IDoc();
-
+	if (!m_pBench) return 0;
 	try
 	{
-		pDoc->CreateDispatch( "MODI.Document" );
-		pDoc->Create(Name);
-		pDoc->OCR( miLANG_CHINESE_SIMPLIFIED, 0, 0 );
- 
-		IImages images = pDoc->GetImages();
-		long	  num =images.GetCount();
-		for( int i = 0; i < num; i++ )
+		m_pBench->LoadImage(Name);
+		int num = m_pBench->RunOCR();
+		for( int i = 0; i < num; ++i )
 		{ 
-			IImage  image = images.GetItem(i);
-			ILayout layout = image.GetLayout();
-			SetDlgItemText(IDC_EDIT1, layout.GetText()+"\r\n");
+			CString text = m_pBench->GetTextByIndex(i);
+			SetDlgItemText(IDC_EDIT1, text+"\r\n");
 		}
-		pDoc->Close(0);
-		pDoc->ReleaseDispatch();
+		m_pBench->End();
 	}
 	catch (CMemoryException* e)
 	{
@@ -209,9 +206,6 @@ BOOL Cimg2textDlg::OCRImageFile( CString Name)//OCR
 	catch ( ...)
 	{
 	}
-	 
-	 
-	delete pDoc;
 	return 1;//(num > 0) ? TRUE : FALSE;
 }
 
@@ -231,7 +225,8 @@ void Cimg2textDlg::OnBnClickedOk()
 	p.x= 595-width/2;
 	p.y= 331-height/2;
 
-	char file[]="c://b.bmp";
+	char file[100];
+	memcpy(file, GetCachePath(), 100);
 	if (s.capture_and_savetobmp(p,	//left top
 		p.x+width,p.y+height //right bottom
 		, file ) )
@@ -248,6 +243,11 @@ void Cimg2textDlg::OnBnClickedOk()
 
 	// TODO: 在此添加控件通知处理程序代码
 	//OnOK();
+	if (m_pBench)
+	{
+		delete m_pBench;//TODOJK 没析构函数，暂时先写在这吧
+		m_pBench = NULL;
+	}
 }
 
 void Cimg2textDlg::ShowPIC(char* m_strFilePath)
@@ -318,7 +318,8 @@ void Cimg2textDlg::OnTimer(UINT nIDEvent)
 
 	*/
 
-	char file[]="c://b.bmp";
+	char file[100];
+	memcpy(file, GetCachePath(), 100);
 	if (s.capture_and_savetobmp(p,	//left top
 		p.x+width,p.y+height //right bottom
 		, file ) )
@@ -357,4 +358,36 @@ void Cimg2textDlg::OnTimer(UINT nIDEvent)
 //	delete buff;
 
 	CDialog::OnTimer(nIDEvent);
+}
+
+const TCHAR* Cimg2textDlg::GetCachePath()
+{
+	if (m_strCachePath.empty())
+	{
+		TCHAR szBuf[101];
+		memset(szBuf, 0, 101);
+		GetLogicalDriveStrings(101, szBuf);
+
+		std::set<TCHAR> setDrives;
+		int i = 0;
+		do
+		{
+			setDrives.insert(*(szBuf + i));
+			do
+			{
+				i++;
+			} while (*(szBuf + i) != 0);
+			i++;
+		} while (i < 100 && *(szBuf + i) != 0);
+
+		TCHAR cDrive = 'N';
+		for (; cDrive >= 'D'; --cDrive)
+		{
+			if (setDrives.find(cDrive) != setDrives.end())
+				break;
+		}
+		m_strCachePath = "://b.bmp";
+		m_strCachePath = cDrive + m_strCachePath;
+	}
+	return m_strCachePath.c_str();
 }

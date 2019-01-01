@@ -116,6 +116,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Workbench.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="img2text.h" />
@@ -147,6 +148,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ScreenShot.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Workbench.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\img2text.ico" />
