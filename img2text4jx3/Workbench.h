@@ -44,3 +44,28 @@ protected:
 	IDoc* m_pDoc;
 	IImages* m_pImages;
 };
+
+struct Pix;
+struct Boxa;
+namespace tesseract
+{
+	class TessBaseAPI;
+}
+
+class TrlBench : public IBench
+{
+public:
+	TrlBench();
+	~TrlBench();
+
+	bool LoadImage(const TCHAR* szImagePath);
+	int RunOCR();
+	const TCHAR* GetTextByIndex(int iIndex);
+
+protected:
+	void Reset();
+
+	Pix* m_pPix;
+	tesseract::TessBaseAPI* m_pApi;
+	Boxa* m_pBoxes;
+};

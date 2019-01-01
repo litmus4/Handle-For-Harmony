@@ -61,11 +61,14 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\tesseract;..\tesseract\api;..\tesseract\ccmain;..\tesseract\ccutil;..\tesseract\ccstruct;..\tesseract\classify;..\tesseract\cube;..\tesseract\cutil;..\tesseract\dict;..\tesseract\image;..\tesseract\neural_networks\runtime;..\tesseract\textord;..\tesseract\viewer;..\tesseract\wordrec;..\tesseract\vs2010\tesseract;..\tesseract\vs2010\port;..\tesseract\opencl;..\..\_gitother\tesseract-vs2013\liblept\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>..\lib;..\..\_gitother\tesseract-vs2013\build\lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libtesseract304.lib;liblept171.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -86,6 +89,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\tesseract;..\tesseract\api;..\tesseract\ccmain;..\tesseract\ccutil;..\tesseract\ccstruct;..\tesseract\classify;..\tesseract\cube;..\tesseract\cutil;..\tesseract\dict;..\tesseract\image;..\tesseract\neural_networks\runtime;..\tesseract\textord;..\tesseract\viewer;..\tesseract\wordrec;..\tesseract\vs2010\tesseract;..\tesseract\vs2010\port;..\tesseract\opencl;..\..\_gitother\tesseract-vs2013\liblept\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -93,6 +97,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>..\lib;..\..\_gitother\tesseract-vs2013\build\lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libtesseract304.lib;liblept171.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>

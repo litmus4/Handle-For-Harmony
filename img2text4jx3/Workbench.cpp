@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "Workbench.h"
+#include "api\baseapi.h"
+#include "allheaders.h"
 
 IBench::~IBench()
 {
@@ -119,6 +121,74 @@ void DocBench::Reset()
 	{
 		delete m_pImages;
 		m_pImages = NULL;
+	}
+	IBench::Reset();
+}
+
+TrlBench::TrlBench()
+: m_pPix(NULL)
+, m_pBoxes(NULL)
+{
+	m_pApi = new tesseract::TessBaseAPI();
+	m_pApi->Init(NULL, "chi_sim");
+}
+
+TrlBench::~TrlBench()
+{
+	Reset();
+	delete m_pApi;
+}
+
+bool TrlBench::LoadImage(const TCHAR* szImagePath)
+{
+	bool bRet = IBench::LoadImage(szImagePath);
+	if (!bRet) return false;
+
+	m_pPix = pixRead(szImagePath);
+	if (m_pPix)
+	{
+		m_pApi->SetImage(m_pPix);
+		return bRet;
+	}
+	return false;
+}
+
+int TrlBench::RunOCR()
+{
+	if (m_pBoxes) delete m_pBoxes;
+	IBench::RunOCR();
+	m_pBoxes = m_pApi->GetComponentImages(tesseract::RIL_TEXTLINE, true, NULL, NULL);
+	return (m_pBoxes ? m_pBoxes->n : 0);
+}
+
+const TCHAR* TrlBench::GetTextByIndex(int iIndex)
+{
+	if (!m_pApi || !m_pBoxes)
+		return NULL;
+
+	const TCHAR* szText = GetCacheText(iIndex);
+	if (!szText)
+	{
+		Box* pBox = boxaGetBox(m_pBoxes, iIndex, L_CLONE);
+		m_pApi->SetRectangle(pBox->x, pBox->y, pBox->w, pBox->h);
+		std::string strText = m_pApi->GetUTF8Text();
+		SetCacheText(iIndex, strText);
+		return strText.c_str();
+	}
+	return szText;
+}
+
+void TrlBench::Reset()
+{
+	if (m_pPix)
+	{
+		delete m_pPix;
+		m_pPix = NULL;
+	}
+	if (m_pBoxes)
+	{
+		delete m_pBoxes;
+		m_pBoxes = NULL;
 	}
 	IBench::Reset();
 }
