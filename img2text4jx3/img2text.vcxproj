@@ -79,6 +79,12 @@
       <Culture>0x0804</Culture>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+    <PostBuildEvent>
+      <Command>copy ..\..\_gitother\tesseract-vs2013\build\lib\Win32\liblept171.dll $(OutDir)
+copy ..\lib\libtesseract304.dll $(OutDir)
+md $(OutDir)tessdata
+copy ..\tesseract\tessdata\chi_sim.traineddata $(OutDir)tessdata\</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -109,6 +115,12 @@
       <Culture>0x0804</Culture>
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+    <PostBuildEvent>
+      <Command>copy ..\..\_gitother\tesseract-vs2013\build\lib\Win32\liblept171.dll $(OutDir)
+copy ..\lib\libtesseract304.dll $(OutDir)
+md $(OutDir)tessdata
+copy ..\tesseract\tessdata\chi_sim.traineddata $(OutDir)tessdata\</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="img2text.cpp" />
