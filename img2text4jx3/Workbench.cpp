@@ -3,6 +3,29 @@
 #include "api\baseapi.h"
 #include "allheaders.h"
 
+std::string Utf8ToStr(const std::string& stru)
+{
+	std::string strRet;
+	if (stru.empty())
+		return strRet;
+	int iSize = MultiByteToWideChar(CP_UTF8, 0, stru.c_str(), -1, NULL, 0);
+	if (iSize != 0)
+	{
+		LPWSTR wszBuf = new WCHAR[iSize];
+		MultiByteToWideChar(CP_UTF8, 0, stru.c_str(), -1, wszBuf, iSize);
+		iSize = WideCharToMultiByte(CP_ACP, 0, wszBuf, -1, NULL, 0, NULL, NULL);
+		if (iSize != 0)
+		{
+			LPSTR szBuf = new CHAR[iSize];
+			WideCharToMultiByte(CP_ACP, 0, wszBuf, -1, szBuf, iSize, NULL, NULL);
+			strRet = szBuf;
+			delete[] szBuf;
+		}
+		delete[] wszBuf;
+	}
+	return strRet;
+}
+
 IBench::~IBench()
 {
 	Reset();
@@ -155,7 +178,7 @@ bool TrlBench::LoadImage(const TCHAR* szImagePath)
 
 int TrlBench::RunOCR()
 {
-	if (m_pBoxes) delete m_pBoxes;
+	//if (m_pBoxes) delete m_pBoxes;
 	IBench::RunOCR();
 	m_pBoxes = m_pApi->GetComponentImages(tesseract::RIL_TEXTLINE, true, NULL, NULL);
 	return (m_pBoxes ? m_pBoxes->n : 0);
@@ -171,7 +194,7 @@ const TCHAR* TrlBench::GetTextByIndex(int iIndex)
 	{
 		Box* pBox = boxaGetBox(m_pBoxes, iIndex, L_CLONE);
 		m_pApi->SetRectangle(pBox->x, pBox->y, pBox->w, pBox->h);
-		std::string strText = m_pApi->GetUTF8Text();
+		std::string strText = Utf8ToStr(m_pApi->GetUTF8Text());
 		SetCacheText(iIndex, strText);
 		return strText.c_str();
 	}
@@ -180,15 +203,15 @@ const TCHAR* TrlBench::GetTextByIndex(int iIndex)
 
 void TrlBench::Reset()
 {
-	if (m_pPix)
-	{
-		delete m_pPix;
-		m_pPix = NULL;
-	}
-	if (m_pBoxes)
-	{
-		delete m_pBoxes;
-		m_pBoxes = NULL;
-	}
+	//if (m_pPix)
+	//{
+	//	delete m_pPix;
+	//	m_pPix = NULL;
+	//}
+	//if (m_pBoxes)
+	//{
+	//	delete m_pBoxes;
+	//	m_pBoxes = NULL;
+	//}
 	IBench::Reset();
 }

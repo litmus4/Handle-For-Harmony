@@ -126,7 +126,7 @@ file.Read(pBuf,dwFileLen);
 file.Close();
 */
 	 SetTimer(0,300,0);
-	 m_pBench = new DocBench();//TODOJK 用控件可选
+	 m_pBench = new TrlBench();//TODOJK 用控件可选
 
 	// TODO: 在此添加额外的初始化代码
 	
