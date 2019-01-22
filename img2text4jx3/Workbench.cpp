@@ -159,7 +159,7 @@ TrlBench::TrlBench()
 TrlBench::~TrlBench()
 {
 	Reset();
-	delete m_pApi;
+	//delete m_pApi;
 }
 
 bool TrlBench::LoadImage(const TCHAR* szImagePath)

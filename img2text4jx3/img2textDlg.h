@@ -53,4 +53,5 @@ public:
 	IBench* m_pBench;
 
 	std::string m_strCachePath;
+	BOOL m_bFixed;
 };

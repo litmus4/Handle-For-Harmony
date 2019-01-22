@@ -57,6 +57,7 @@ Cimg2textDlg::Cimg2textDlg(CWnd* pParent /*=NULL*/)
 	, m_y(0)
 	, m_text2(_T(""))
 	, m_pBench(NULL)
+	, m_bFixed(TRUE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -278,15 +279,26 @@ void Cimg2textDlg::OnTimer(UINT nIDEvent)
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 
 
-	//得到绝对坐标
-	DWORD   dw   =   ::GetMessagePos(); //返回一个DWORD,低位的是x,高位的y 
-	POINT   pt;
-	pt.x=LOWORD(dw);
-	pt.y=HIWORD(dw);//转换成鼠标的屏幕坐标
-	
-	m_x=pt.x;
-	m_y=pt.y;
-	UpdateData(FALSE);
+	if (!m_bFixed)
+	{
+		//得到绝对坐标
+		DWORD   dw = ::GetMessagePos(); //返回一个DWORD,低位的是x,高位的y 
+		POINT   pt;
+		pt.x = LOWORD(dw);
+		pt.y = HIWORD(dw);//转换成鼠标的屏幕坐标
+
+		m_x = pt.x;
+		m_y = pt.y;
+		UpdateData(FALSE);
+	}
+	else
+	{
+		CString str;
+		GetDlgItemText(IDC_EDIT2, str);
+		m_x = atoi(str);
+		GetDlgItemText(IDC_EDIT3, str);
+		m_y = atoi(str);
+	}
 
 	//获得pic ctrl的size
 	CRect rect;
