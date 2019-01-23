@@ -37,6 +37,7 @@ protected:
 public:
 	CString m_text;
 	afx_msg void OnBnClickedOk(); 
+	afx_msg void OnChkClicked();
 	int m_x;
 	int m_y;
 	afx_msg void OnTimer(UINT nIDEvent);

@@ -70,6 +70,7 @@ void Cimg2textDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT3, m_y);
 
 	DDX_Control(pDX, IDC_PIC2, m_pic2);
+	DDX_Check(pDX, IDC_CHECK1, m_bFixed);
 	DDX_Text(pDX, IDC_EDIT4, m_text2);
 }
 
@@ -79,6 +80,7 @@ BEGIN_MESSAGE_MAP(Cimg2textDlg, CDialog)
 	ON_WM_QUERYDRAGICON()
 	//}}AFX_MSG_MAP
 	ON_BN_CLICKED(IDOK, OnBnClickedOk) 
+	ON_BN_CLICKED(IDC_CHECK1, OnChkClicked)
 	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
@@ -249,6 +251,11 @@ void Cimg2textDlg::OnBnClickedOk()
 		delete m_pBench;//TODOJK 没析构函数，暂时先写在这吧
 		m_pBench = NULL;
 	}
+}
+
+void Cimg2textDlg::OnChkClicked()
+{
+	UpdateData(TRUE);
 }
 
 void Cimg2textDlg::ShowPIC(char* m_strFilePath)
