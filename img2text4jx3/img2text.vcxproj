@@ -123,6 +123,7 @@ copy ..\tesseract\tessdata\chi_sim.traineddata $(OutDir)tessdata\</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="HdEventMgr.cpp" />
     <ClCompile Include="img2text.cpp" />
     <ClCompile Include="img2textDlg.cpp" />
     <ClCompile Include="mdivwctl.cpp" />
@@ -137,6 +138,7 @@ copy ..\tesseract\tessdata\chi_sim.traineddata $(OutDir)tessdata\</Command>
     <ClCompile Include="Workbench.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="HdEventMgr.h" />
     <ClInclude Include="img2text.h" />
     <ClInclude Include="img2textDlg.h" />
     <ClInclude Include="imginclude\xfile.h" />

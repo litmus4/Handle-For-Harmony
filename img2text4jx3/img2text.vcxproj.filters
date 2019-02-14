@@ -45,6 +45,9 @@
     <ClCompile Include="Workbench.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="HdEventMgr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyImage.h">
@@ -135,6 +138,9 @@
       <Filter>ximage</Filter>
     </ClInclude>
     <ClInclude Include="Workbench.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="HdEventMgr.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
