@@ -27,6 +27,7 @@ public:
 	int GetKeyClickNum();
 	void ClearAllKeyClicks();
 	bool CheckAndPopClickTimeUp(float fTime, std::vector<KeyClick*>& vecOut);
+	void RestoreKeyClickFlow();
 
 private:
 	std::string m_strKeyword;

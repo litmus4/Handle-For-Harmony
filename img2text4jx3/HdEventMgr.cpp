@@ -75,15 +75,24 @@ bool HdEvent::CheckAndPopClickTimeUp(float fTime, std::vector<KeyClick*>& vecOut
 {
 	bool bRet = false;
 	std::multimap<float, KeyClick*>::iterator itMap = m_mapClickFlow.begin();
-	for (; itMap != m_mapClickFlow.end(); itMap++)
+	while (itMap != m_mapClickFlow.end())
 	{
+		bRet = true;
 		if (itMap->first <= fTime)
 		{
 			vecOut.push_back(itMap->second);
-			bRet = true;
+			itMap = m_mapClickFlow.erase(itMap);
 		}
 		else
 			break;
 	}
 	return bRet;
+}
+
+void HdEvent::RestoreKeyClickFlow()
+{
+	m_mapClickFlow.clear();
+	std::vector<KeyClick>::iterator iter = m_vecClicks.begin();
+	for (; iter != m_vecClicks.end(); iter++)
+		m_mapClickFlow.insert(std::make_pair((*iter).fDownTime, &(*iter)));
 }
