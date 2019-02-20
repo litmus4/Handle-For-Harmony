@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <functional>
 
 class HdEvent
 {
@@ -35,7 +36,36 @@ private:
 	std::multimap<float, KeyClick*> m_mapClickFlow;
 };
 
+class CWnd;
+
 class HdEventMgr
 {
-	//
+public:
+	static HdEventMgr* GetInstance();
+	static void DeleteInstance();
+	~HdEventMgr();
+
+	bool Init(CWnd* pWnd, UINT uTimerID);
+	void Release();
+	bool OnTimer(UINT uTimerID, float fForceTime = -1.0f);
+
+	bool AddEvent(HdEvent* pEvent);
+	void RemoveEventByKeyword(const TCHAR* szKeyword);
+	HdEvent* GetEventByKeyword(const TCHAR* szKeyword);
+	int GetEventNum();
+	HdEvent* ForEachEvent(std::function<bool(HdEvent*, int)> fnCallback);
+
+	bool CheckAndRunFromText(const std::string& strText);
+	bool IsRunning();
+
+private:
+	HdEventMgr();
+	static HdEventMgr* s_pInst;
+
+	CWnd* m_pWnd;
+	UINT m_uTimerID;
+	std::map<std::string, HdEvent*> m_mapEvents;
+	HdEvent* m_pRunningEvent;
+	float m_fStartTime;
+	std::vector<HdEvent::KeyClick*> m_vecUsedClicks;
 };

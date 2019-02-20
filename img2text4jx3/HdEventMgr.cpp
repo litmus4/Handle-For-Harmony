@@ -1,4 +1,7 @@
+#include "stdafx.h"
 #include "HdEventMgr.h"
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")
 
 HdEvent::HdEvent()
 {
@@ -95,4 +98,163 @@ void HdEvent::RestoreKeyClickFlow()
 	std::vector<KeyClick>::iterator iter = m_vecClicks.begin();
 	for (; iter != m_vecClicks.end(); iter++)
 		m_mapClickFlow.insert(std::make_pair((*iter).fDownTime, &(*iter)));
+}
+
+HdEventMgr* HdEventMgr::s_pInst = NULL;
+
+HdEventMgr* HdEventMgr::GetInstance()
+{
+	if (!s_pInst)
+		s_pInst = new HdEventMgr();
+	return s_pInst;
+}
+
+void HdEventMgr::DeleteInstance()
+{
+	if (s_pInst)
+	{
+		delete s_pInst;
+		s_pInst = NULL;
+	}
+}
+
+HdEventMgr::HdEventMgr()
+: m_pWnd(NULL)
+, m_uTimerID(-1)
+, m_pRunningEvent(NULL)
+, m_fStartTime(0.0f)
+{
+}
+
+HdEventMgr::~HdEventMgr()
+{
+	Release();
+}
+
+bool HdEventMgr::Init(CWnd* pWnd, UINT uTimerID)
+{
+	if (!pWnd) return false;
+
+	m_pWnd = pWnd;
+	m_uTimerID = uTimerID;
+}
+
+void HdEventMgr::Release()
+{
+	m_pWnd = NULL;
+	m_uTimerID = -1;
+
+	ForEachEvent([](HdEvent* pEvent, int i) -> bool
+	{
+		delete pEvent;
+		return false;
+	});
+	m_pRunningEvent = NULL;
+	m_vecUsedClicks.clear();
+}
+
+bool HdEventMgr::OnTimer(UINT uTimerID, float fForceTime)
+{
+	if (!m_pWnd || !m_pRunningEvent || uTimerID != m_uTimerID)
+		return false;
+
+	float fCurTime = (fForceTime >= 0.0f ? fForceTime : timeGetTime() / 1000.0f);
+	float fTime = fCurTime - m_fStartTime;
+	std::vector<HdEvent::KeyClick*> vecPopClicks;
+	if (m_pRunningEvent->CheckAndPopClickTimeUp(fTime, vecPopClicks))
+	{
+		if (vecPopClicks.empty()) return true;
+
+		//TODOJK Ö´ÐÐ°´¼ü
+		std::vector<HdEvent::KeyClick*>::iterator itPop = vecPopClicks.begin();
+		for (; itPop != vecPopClicks.end(); itPop++)
+			m_vecUsedClicks.push_back(*itPop);
+	}
+	else
+	{
+		m_pRunningEvent->RestoreKeyClickFlow();
+		m_pRunningEvent = NULL;
+		m_vecUsedClicks.clear();
+		m_pWnd->KillTimer(m_uTimerID);
+	}
+	return true;
+}
+
+bool HdEventMgr::AddEvent(HdEvent* pEvent)
+{
+	if (!pEvent || m_pRunningEvent)
+		return false;
+
+	std::map<std::string, HdEvent*>::iterator iter = m_mapEvents.find(pEvent->GetKeyword());
+	if (iter == m_mapEvents.end())
+	{
+		m_mapEvents.insert(std::make_pair(pEvent->GetKeyword(), pEvent));
+		return true;
+	}
+	return false;
+}
+
+void HdEventMgr::RemoveEventByKeyword(const TCHAR* szKeyword)
+{
+	if (!szKeyword || m_pRunningEvent)
+		return;
+
+	std::map<std::string, HdEvent*>::iterator iter = m_mapEvents.find(szKeyword);
+	if (iter != m_mapEvents.end())
+		m_mapEvents.erase(iter);
+}
+
+HdEvent* HdEventMgr::GetEventByKeyword(const TCHAR* szKeyword)
+{
+	if (!szKeyword) return NULL;
+
+	std::map<std::string, HdEvent*>::iterator iter = m_mapEvents.find(szKeyword);
+	if (iter != m_mapEvents.end())
+		return iter->second;
+	return NULL;
+}
+
+int HdEventMgr::GetEventNum()
+{
+	return m_mapEvents.size();
+}
+
+HdEvent* HdEventMgr::ForEachEvent(std::function<bool(HdEvent*, int)> fnCallback)
+{
+	std::map<std::string, HdEvent*>::iterator iter = m_mapEvents.begin();
+	for (int i = 0; iter != m_mapEvents.end(); iter++, ++i)
+	{
+		if (fnCallback(iter->second, i))
+			return iter->second;
+	}
+	return NULL;
+}
+
+bool HdEventMgr::CheckAndRunFromText(const std::string& strText)
+{
+	if (!m_pWnd || m_pRunningEvent)
+		return false;
+
+	HdEvent* pHitEvent = ForEachEvent([strText](HdEvent* pEvent, int i) -> bool
+	{
+		std::size_t ipos = strText.find(pEvent->GetKeyword());
+		if (ipos != std::string::npos)
+			return true;
+		return false;
+	});
+
+	if (pHitEvent)
+	{
+		m_pRunningEvent = pHitEvent;
+		m_fStartTime = timeGetTime() / 1000.0f;
+		m_pWnd->SetTimer(m_uTimerID, 50, 0);
+		OnTimer(m_uTimerID, m_fStartTime);
+		return true;
+	}
+	return false;
+}
+
+bool HdEventMgr::IsRunning()
+{
+	return (m_pRunningEvent != NULL);
 }
