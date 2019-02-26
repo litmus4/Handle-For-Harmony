@@ -150,7 +150,7 @@ void HdEventMgr::Release()
 		return false;
 	});
 	m_pRunningEvent = NULL;
-	m_vecUsedClicks.clear();
+	m_mapUsingClicks.clear();
 }
 
 bool HdEventMgr::OnTimer(UINT uTimerID, float fForceTime)
@@ -160,21 +160,37 @@ bool HdEventMgr::OnTimer(UINT uTimerID, float fForceTime)
 
 	float fCurTime = (fForceTime >= 0.0f ? fForceTime : timeGetTime() / 1000.0f);
 	float fTime = fCurTime - m_fStartTime;
-	std::vector<HdEvent::KeyClick*> vecPopClicks;
-	if (m_pRunningEvent->CheckAndPopClickTimeUp(fTime, vecPopClicks))
-	{
-		if (vecPopClicks.empty()) return true;
 
-		//TODOJK 执行按键
+	std::vector<HdEvent::KeyClick*> vecPopClicks;
+	bool bHasClick = m_pRunningEvent->CheckAndPopClickTimeUp(fTime, vecPopClicks);
+	if (bHasClick && !vecPopClicks.empty())
+	{
 		std::vector<HdEvent::KeyClick*>::iterator itPop = vecPopClicks.begin();
 		for (; itPop != vecPopClicks.end(); itPop++)
-			m_vecUsedClicks.push_back(*itPop);
+		{
+			//TODOJK 执行按键
+			m_mapUsingClicks.insert(std::make_pair((*itPop)->fUpTime, *itPop));
+		}
 	}
-	else
+	
+	std::multimap<float, HdEvent::KeyClick*>::iterator itUsing = m_mapUsingClicks.begin();
+	while (itUsing != m_mapUsingClicks.end())
+	{
+		bHasClick = true;
+		if (itUsing->first <= fTime)
+		{
+			//TODOJK 执行按键
+			itUsing = m_mapUsingClicks.erase(itUsing);
+		}
+		else
+			break;
+	}
+
+	if (!bHasClick)
 	{
 		m_pRunningEvent->RestoreKeyClickFlow();
 		m_pRunningEvent = NULL;
-		m_vecUsedClicks.clear();
+		m_mapUsingClicks.clear();
 		m_pWnd->KillTimer(m_uTimerID);
 	}
 	return true;

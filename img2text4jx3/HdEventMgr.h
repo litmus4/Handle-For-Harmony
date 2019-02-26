@@ -67,5 +67,5 @@ private:
 	std::map<std::string, HdEvent*> m_mapEvents;
 	HdEvent* m_pRunningEvent;
 	float m_fStartTime;
-	std::vector<HdEvent::KeyClick*> m_vecUsedClicks;
+	std::multimap<float, HdEvent::KeyClick*> m_mapUsingClicks;
 };
