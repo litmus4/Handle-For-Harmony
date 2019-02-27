@@ -37,6 +37,7 @@ private:
 };
 
 class CWnd;
+class IInputModel;
 
 class HdEventMgr
 {
@@ -68,4 +69,5 @@ private:
 	HdEvent* m_pRunningEvent;
 	float m_fStartTime;
 	std::multimap<float, HdEvent::KeyClick*> m_mapUsingClicks;
+	IInputModel* m_pInputModel;
 };

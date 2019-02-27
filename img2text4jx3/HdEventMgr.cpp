@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "HdEventMgr.h"
+#include "InputModel.h"
 #include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
 
@@ -137,6 +138,8 @@ bool HdEventMgr::Init(CWnd* pWnd, UINT uTimerID)
 
 	m_pWnd = pWnd;
 	m_uTimerID = uTimerID;
+
+	m_pInputModel = new SendInputModel();
 }
 
 void HdEventMgr::Release()
@@ -151,6 +154,7 @@ void HdEventMgr::Release()
 	});
 	m_pRunningEvent = NULL;
 	m_mapUsingClicks.clear();
+	delete m_pInputModel;
 }
 
 bool HdEventMgr::OnTimer(UINT uTimerID, float fForceTime)
@@ -168,7 +172,7 @@ bool HdEventMgr::OnTimer(UINT uTimerID, float fForceTime)
 		std::vector<HdEvent::KeyClick*>::iterator itPop = vecPopClicks.begin();
 		for (; itPop != vecPopClicks.end(); itPop++)
 		{
-			//TODOJK 执行按键
+			m_pInputModel->Exec((*itPop)->wVk, true);
 			m_mapUsingClicks.insert(std::make_pair((*itPop)->fUpTime, *itPop));
 		}
 	}
@@ -179,7 +183,7 @@ bool HdEventMgr::OnTimer(UINT uTimerID, float fForceTime)
 		bHasClick = true;
 		if (itUsing->first <= fTime)
 		{
-			//TODOJK 执行按键
+			m_pInputModel->Exec(itUsing->second->wVk, false);
 			itUsing = m_mapUsingClicks.erase(itUsing);
 		}
 		else

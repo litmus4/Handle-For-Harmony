@@ -126,6 +126,7 @@ copy ..\tesseract\tessdata\chi_sim.traineddata $(OutDir)tessdata\</Command>
     <ClCompile Include="HdEventMgr.cpp" />
     <ClCompile Include="img2text.cpp" />
     <ClCompile Include="img2textDlg.cpp" />
+    <ClCompile Include="InputModel.cpp" />
     <ClCompile Include="mdivwctl.cpp" />
     <ClCompile Include="MyImage.cpp" />
     <ClCompile Include="Picture.cpp" />
@@ -161,6 +162,7 @@ copy ..\tesseract\tessdata\chi_sim.traineddata $(OutDir)tessdata\</Command>
     <ClInclude Include="imginclude\ximawmf.h" />
     <ClInclude Include="imginclude\xiofile.h" />
     <ClInclude Include="imginclude\xmemfile.h" />
+    <ClInclude Include="InputModel.h" />
     <ClInclude Include="mdivwctl.h" />
     <ClInclude Include="MyImage.h" />
     <ClInclude Include="Picture.h" />
