@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "InputModel.h"
 
 IInputModel::IInputModel()
