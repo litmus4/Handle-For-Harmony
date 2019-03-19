@@ -55,7 +55,6 @@ Cimg2textDlg::Cimg2textDlg(CWnd* pParent /*=NULL*/)
 	, m_text(_T(""))
 	, m_x(0)
 	, m_y(0)
-	, m_text2(_T(""))
 	, m_pBench(NULL)
 	, m_bFixed(TRUE)
 {
@@ -71,7 +70,7 @@ void Cimg2textDlg::DoDataExchange(CDataExchange* pDX)
 
 	DDX_Control(pDX, IDC_PIC2, m_pic2);
 	DDX_Check(pDX, IDC_CHECK1, m_bFixed);
-	DDX_Text(pDX, IDC_EDIT4, m_text2);
+	DDX_Control(pDX, IDC_LIST1, m_listBox);
 }
 
 BEGIN_MESSAGE_MAP(Cimg2textDlg, CDialog)

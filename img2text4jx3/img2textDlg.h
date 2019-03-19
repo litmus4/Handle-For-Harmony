@@ -49,7 +49,7 @@ public:
 	const TCHAR* Cimg2textDlg::GetCachePath();
  
 	CPictureEx m_pic2;
-	CString m_text2;
+	CListBox m_listBox;
 
 	IBench* m_pBench;
 
