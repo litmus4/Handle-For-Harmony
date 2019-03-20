@@ -51,6 +51,9 @@
     <ClCompile Include="InputModel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="CHdEventDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyImage.h">
@@ -147,6 +150,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="InputModel.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CHdEventDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
