@@ -122,6 +122,7 @@ void HdEventMgr::DeleteInstance()
 HdEventMgr::HdEventMgr()
 : m_pWnd(NULL)
 , m_uTimerID(-1)
+, m_bAutoCycle(false)
 , m_pRunningEvent(NULL)
 , m_fStartTime(0.0f)
 {
@@ -221,7 +222,11 @@ void HdEventMgr::RemoveEventByKeyword(const TCHAR* szKeyword)
 
 	std::map<std::string, HdEvent*>::iterator iter = m_mapEvents.find(szKeyword);
 	if (iter != m_mapEvents.end())
+	{
+		if (m_bAutoCycle)
+			delete iter->second;
 		m_mapEvents.erase(iter);
+	}
 }
 
 HdEvent* HdEventMgr::GetEventByKeyword(const TCHAR* szKeyword)
@@ -248,6 +253,11 @@ HdEvent* HdEventMgr::ForEachEvent(std::function<bool(HdEvent*, int)> fnCallback)
 			return iter->second;
 	}
 	return NULL;
+}
+
+void HdEventMgr::SetAutoCycle(bool b)
+{
+	m_bAutoCycle = b;
 }
 
 bool HdEventMgr::CheckAndRunFromText(const std::string& strText)

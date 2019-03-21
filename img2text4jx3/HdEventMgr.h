@@ -55,6 +55,7 @@ public:
 	HdEvent* GetEventByKeyword(const TCHAR* szKeyword);
 	int GetEventNum();
 	HdEvent* ForEachEvent(std::function<bool(HdEvent*, int)> fnCallback);
+	void SetAutoCycle(bool b);
 
 	bool CheckAndRunFromText(const std::string& strText);
 	bool IsRunning();
@@ -66,6 +67,7 @@ private:
 	CWnd* m_pWnd;
 	UINT m_uTimerID;
 	std::map<std::string, HdEvent*> m_mapEvents;
+	bool m_bAutoCycle;
 	HdEvent* m_pRunningEvent;
 	float m_fStartTime;
 	std::multimap<float, HdEvent::KeyClick*> m_mapUsingClicks;
