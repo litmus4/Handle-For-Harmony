@@ -5,6 +5,7 @@
 #include "img2text.h"
 #include "CHdEventDlg.h"
 #include "afxdialogex.h"
+#include "HdEventMgr.h"
 
 
 // CHdEventDlg 对话框
@@ -13,6 +14,8 @@ IMPLEMENT_DYNAMIC(CHdEventDlg, CDialog)
 
 CHdEventDlg::CHdEventDlg(CWnd* pParent /*=nullptr*/)
 	: CDialog(IDD_EVENT_DIALOG, pParent)
+	, m_pEvent(NULL)
+	, m_bNew(false)
 {
 
 }
@@ -25,7 +28,11 @@ BOOL CHdEventDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	// TODO:  在此添加额外的初始化
+	if (!m_pEvent)
+	{
+		m_pEvent = new HdEvent();
+		m_bNew = true;
+	}
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
@@ -83,4 +90,14 @@ void CHdEventDlg::OnBnClickedCancel()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	CDialog::OnCancel();
+}
+
+void CHdEventDlg::SetHdEvent(HdEvent* pEvent)
+{
+	if (m_bNew)
+	{
+		delete m_pEvent;
+		m_bNew = false;
+	}
+	m_pEvent = pEvent;
 }

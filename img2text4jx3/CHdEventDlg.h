@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 
+class HdEvent;
 // CHdEventDlg 对话框
 
 class CHdEventDlg : public CDialog
@@ -29,9 +30,14 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
 
+	void SetHdEvent(HdEvent* pEvent);
+
 	CEdit m_ediKey;
 	CListBox m_lisClicks;
 	CEdit m_ediVk;
 	CEdit m_ediDown;
 	CEdit m_ediUp;
+
+	HdEvent* m_pEvent;
+	bool m_bNew;
 };

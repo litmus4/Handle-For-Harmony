@@ -9,6 +9,7 @@
 #include "Picture.h"
 #include "Workbench.h"
 #include "ScreenShot.h"
+#include "CHdEventDlg.h"
 
 #include <set>
 
@@ -81,6 +82,7 @@ BEGIN_MESSAGE_MAP(Cimg2textDlg, CDialog)
 	ON_BN_CLICKED(IDOK, OnBnClickedOk) 
 	ON_BN_CLICKED(IDC_CHECK1, OnChkClicked)
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BUTTON1, &Cimg2textDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -408,4 +410,11 @@ const TCHAR* Cimg2textDlg::GetCachePath()
 		m_strCachePath = cDrive + m_strCachePath;
 	}
 	return m_strCachePath.c_str();
+}
+
+
+void Cimg2textDlg::OnBnClickedButton1()
+{
+	CHdEventDlg dlg;
+	dlg.DoModal();
 }

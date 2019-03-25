@@ -55,4 +55,6 @@ public:
 
 	std::string m_strCachePath;
 	BOOL m_bFixed;
+
+	afx_msg void OnBnClickedButton1();
 };
