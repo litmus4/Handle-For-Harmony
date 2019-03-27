@@ -36,7 +36,7 @@ BOOL CHdEventDlg::OnInitDialog()
 		{
 			HdEvent::KeyClick* pClick = m_pEvent->GetKeyClick(i);
 			TCHAR szBuf[100];
-			sprintf(szBuf, "%d %.2f %.2f", pClick->wVk, pClick->fDownTime, pClick->fUpTime);
+			sprintf(szBuf, "%d    %.2f    %.2f", pClick->wVk, pClick->fDownTime, pClick->fUpTime);
 			plisClicks->AddString(szBuf);
 		}
 	}
@@ -75,7 +75,17 @@ END_MESSAGE_MAP()
 
 void CHdEventDlg::OnBnClickedButtonAdd()
 {
-	// TODO: 在此添加控件通知处理程序代码
+	CString sVk, sDown, sUp;
+	m_ediVk.GetWindowText(sVk);
+	m_ediDown.GetWindowText(sDown);
+	m_ediUp.GetWindowText(sUp);
+	if (sVk.GetLength() > 0 && sDown.GetLength() > 0 && sUp.GetLength() > 0)
+	{
+		m_pEvent->AddKeyClick(atoi(sVk), atof(sDown), atof(sUp));
+		TCHAR szBuf[100];
+		sprintf(szBuf, "%s    %.2f    %.2f", sVk, atof(sDown), atof(sUp));
+		m_lisClicks.AddString(szBuf);
+	}
 }
 
 
