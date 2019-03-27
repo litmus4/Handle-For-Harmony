@@ -28,7 +28,19 @@ BOOL CHdEventDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	if (!m_pEvent)
+	if (m_pEvent)
+	{
+		SetDlgItemText(IDC_EDIT_KEY, m_pEvent->GetKeyword().c_str());
+		CListBox* plisClicks = static_cast<CListBox*>(GetDlgItem(IDC_LIST_CLICKS));
+		for (int i = 0, iNum = m_pEvent->GetKeyClickNum(); i < iNum; ++i)
+		{
+			HdEvent::KeyClick* pClick = m_pEvent->GetKeyClick(i);
+			TCHAR szBuf[100];
+			sprintf(szBuf, "%d %.2f %.2f", pClick->wVk, pClick->fDownTime, pClick->fUpTime);
+			plisClicks->AddString(szBuf);
+		}
+	}
+	else
 	{
 		m_pEvent = new HdEvent();
 		m_bNew = true;
