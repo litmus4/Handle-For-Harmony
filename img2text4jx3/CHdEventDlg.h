@@ -24,6 +24,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
+	afx_msg void OnLbnSelchangeListClicks();
 	afx_msg void OnBnClickedButtonAdd();
 	afx_msg void OnBnClickedButtonModi();
 	afx_msg void OnBnClickedButtonDel();

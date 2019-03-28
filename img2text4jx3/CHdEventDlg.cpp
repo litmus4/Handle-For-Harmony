@@ -67,10 +67,27 @@ BEGIN_MESSAGE_MAP(CHdEventDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_DEL, &CHdEventDlg::OnBnClickedButtonDel)
 	ON_BN_CLICKED(IDOK, &CHdEventDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CHdEventDlg::OnBnClickedCancel)
+	ON_LBN_SELCHANGE(IDC_LIST_CLICKS, &CHdEventDlg::OnLbnSelchangeListClicks)
 END_MESSAGE_MAP()
 
 
 // CHdEventDlg 消息处理程序
+
+
+void CHdEventDlg::OnLbnSelchangeListClicks()
+{
+	int iSel = m_lisClicks.GetCurSel();
+	HdEvent::KeyClick* pClick = m_pEvent->GetKeyClick(iSel);
+	if (pClick)
+	{
+		TCHAR szBuf[100];
+		m_ediVk.SetWindowText(itoa(pClick->wVk, szBuf, 10));
+		sprintf(szBuf, "%.2f", pClick->fDownTime);
+		m_ediDown.SetWindowText(szBuf);
+		sprintf(szBuf, "%.2f", pClick->fUpTime);
+		m_ediUp.SetWindowText(szBuf);
+	}
+}
 
 
 void CHdEventDlg::OnBnClickedButtonAdd()
@@ -91,7 +108,22 @@ void CHdEventDlg::OnBnClickedButtonAdd()
 
 void CHdEventDlg::OnBnClickedButtonModi()
 {
-	// TODO: 在此添加控件通知处理程序代码
+	int iSel = m_lisClicks.GetCurSel();
+	HdEvent::KeyClick* pClick = m_pEvent->GetKeyClick(iSel);
+	CString sVk, sDown, sUp;
+	m_ediVk.GetWindowText(sVk);
+	m_ediDown.GetWindowText(sDown);
+	m_ediUp.GetWindowText(sUp);
+	if (pClick && sVk.GetLength() > 0 && sDown.GetLength() > 0 && sUp.GetLength() > 0)
+	{
+		pClick->wVk = atoi(sVk);
+		pClick->fDownTime = atof(sDown);
+		pClick->fUpTime = atof(sUp);
+		m_lisClicks.DeleteString(iSel);
+		TCHAR szBuf[100];
+		sprintf(szBuf, "%s    %.2f    %.2f", sVk, atof(sDown), atof(sUp));
+		m_lisClicks.InsertString(iSel, szBuf);
+	}
 }
 
 
