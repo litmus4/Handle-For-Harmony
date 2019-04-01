@@ -49,6 +49,7 @@ public:
 	bool Init(CWnd* pWnd, UINT uTimerID);
 	void Release();
 	bool OnTimer(UINT uTimerID, float fForceTime = -1.0f);
+	CWnd* GetWnd();
 
 	bool AddEvent(HdEvent* pEvent);
 	void RemoveEventByKeyword(const TCHAR* szKeyword);

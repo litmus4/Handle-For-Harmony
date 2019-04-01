@@ -8,6 +8,7 @@
 
 
 class IBench;
+class HdEvent;
 // Cimg2textDlg ¶Ô»°¿ò
 class Cimg2textDlg : public CDialog
 {
@@ -57,4 +58,7 @@ public:
 	BOOL m_bFixed;
 
 	afx_msg void OnBnClickedButton1();
+
+	void OnHdEventAdded(HdEvent* pEvent);
+	void OnHdEventModified(HdEvent* pEvent);
 };

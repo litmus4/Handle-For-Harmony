@@ -9,6 +9,7 @@
 #include "Picture.h"
 #include "Workbench.h"
 #include "ScreenShot.h"
+#include "HdEventMgr.h"
 #include "CHdEventDlg.h"
 
 #include <set>
@@ -130,7 +131,8 @@ file.Read(pBuf,dwFileLen);
 file.Close();
 */
 	 SetTimer(0,300,0);
-	 m_pBench = new DocBench();//TODOJK 用控件可选
+	 m_pBench = new TrlBench();//TODOJK 用控件可选
+	 HdEventMgr::GetInstance()->Init(this, 2);
 
 	// TODO: 在此添加额外的初始化代码
 	
@@ -417,4 +419,20 @@ void Cimg2textDlg::OnBnClickedButton1()
 {
 	CHdEventDlg dlg;
 	dlg.DoModal();
+}
+
+void Cimg2textDlg::OnHdEventAdded(HdEvent* pEvent)
+{
+	HdEventMgr::GetInstance()->AddEvent(pEvent);
+	m_listBox.ResetContent();
+	HdEventMgr::GetInstance()->ForEachEvent([this](HdEvent* pEvent, int i) -> bool
+	{
+		this->m_listBox.InsertString(-1, pEvent->GetKeyword().c_str());
+		return false;
+	});
+}
+
+void Cimg2textDlg::OnHdEventModified(HdEvent* pEvent)
+{
+	//FLAGJK 上次提交未测试
 }

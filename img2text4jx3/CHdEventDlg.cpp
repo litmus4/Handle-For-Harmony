@@ -6,6 +6,7 @@
 #include "CHdEventDlg.h"
 #include "afxdialogex.h"
 #include "HdEventMgr.h"
+#include "img2textDlg.h"
 
 
 // CHdEventDlg 对话框
@@ -101,7 +102,7 @@ void CHdEventDlg::OnBnClickedButtonAdd()
 		m_pEvent->AddKeyClick(atoi(sVk), atof(sDown), atof(sUp));
 		TCHAR szBuf[100];
 		sprintf(szBuf, "%s    %.2f    %.2f", sVk, atof(sDown), atof(sUp));
-		m_lisClicks.AddString(szBuf);
+		m_lisClicks.InsertString(-1, szBuf);
 	}
 }
 
@@ -129,20 +130,34 @@ void CHdEventDlg::OnBnClickedButtonModi()
 
 void CHdEventDlg::OnBnClickedButtonDel()
 {
-	// TODO: 在此添加控件通知处理程序代码
+	int iSel = m_lisClicks.GetCurSel();
+	HdEvent::KeyClick* pClick = m_pEvent->GetKeyClick(iSel);
+	if (pClick)
+	{
+		m_pEvent->RemoveKeyClick(iSel);
+		m_lisClicks.DeleteString(iSel);
+	}
 }
 
 
 void CHdEventDlg::OnBnClickedOk()
 {
-	// TODO: 在此添加控件通知处理程序代码
+	Cimg2textDlg* pDlg = static_cast<Cimg2textDlg*>(HdEventMgr::GetInstance()->GetWnd());
+	if (m_bNew)
+		pDlg->OnHdEventAdded(m_pEvent);
+	else
+		pDlg->OnHdEventModified(m_pEvent);
 	CDialog::OnOK();
 }
 
 
 void CHdEventDlg::OnBnClickedCancel()
 {
-	// TODO: 在此添加控件通知处理程序代码
+	if (m_bNew)
+	{
+		delete m_pEvent;
+		m_pEvent = NULL;
+	}
 	CDialog::OnCancel();
 }
 

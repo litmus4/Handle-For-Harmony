@@ -201,6 +201,11 @@ bool HdEventMgr::OnTimer(UINT uTimerID, float fForceTime)
 	return true;
 }
 
+CWnd* HdEventMgr::GetWnd()
+{
+	return m_pWnd;
+}
+
 bool HdEventMgr::AddEvent(HdEvent* pEvent)
 {
 	if (!pEvent || m_pRunningEvent)
