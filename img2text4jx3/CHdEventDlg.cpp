@@ -142,6 +142,10 @@ void CHdEventDlg::OnBnClickedButtonDel()
 
 void CHdEventDlg::OnBnClickedOk()
 {
+	CString sKey;
+	m_ediKey.GetWindowText(sKey);
+	m_pEvent->SetKeyword(sKey);
+
 	Cimg2textDlg* pDlg = static_cast<Cimg2textDlg*>(HdEventMgr::GetInstance()->GetWnd());
 	if (m_bNew)
 		pDlg->OnHdEventAdded(m_pEvent);

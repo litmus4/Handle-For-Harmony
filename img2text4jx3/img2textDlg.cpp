@@ -84,6 +84,7 @@ BEGIN_MESSAGE_MAP(Cimg2textDlg, CDialog)
 	ON_BN_CLICKED(IDC_CHECK1, OnChkClicked)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON1, &Cimg2textDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON2, &Cimg2textDlg::OnBnClickedButton2)
 END_MESSAGE_MAP()
 
 
@@ -133,6 +134,7 @@ file.Close();
 	 SetTimer(0,300,0);
 	 m_pBench = new TrlBench();//TODOJK 用控件可选
 	 HdEventMgr::GetInstance()->Init(this, 2);
+	 HdEventMgr::GetInstance()->SetAutoCycle(true);
 
 	// TODO: 在此添加额外的初始化代码
 	
@@ -421,6 +423,18 @@ void Cimg2textDlg::OnBnClickedButton1()
 	dlg.DoModal();
 }
 
+void Cimg2textDlg::OnBnClickedButton2()
+{
+	int iSel = m_listBox.GetCurSel();
+	if (iSel < 0 || iSel >= m_listBox.GetCount())
+		return;
+	CString sKey;
+	m_listBox.GetText(iSel, sKey);
+	CHdEventDlg dlg;
+	dlg.SetHdEvent(HdEventMgr::GetInstance()->GetEventByKeyword(sKey));
+	dlg.DoModal();
+}
+
 void Cimg2textDlg::OnHdEventAdded(HdEvent* pEvent)
 {
 	HdEventMgr::GetInstance()->AddEvent(pEvent);
@@ -434,5 +448,5 @@ void Cimg2textDlg::OnHdEventAdded(HdEvent* pEvent)
 
 void Cimg2textDlg::OnHdEventModified(HdEvent* pEvent)
 {
-	//FLAGJK 上次提交未测试
+	//FLAGJK 修改前需要克隆
 }

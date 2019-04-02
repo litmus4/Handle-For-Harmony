@@ -58,6 +58,7 @@ public:
 	BOOL m_bFixed;
 
 	afx_msg void OnBnClickedButton1();
+	afx_msg void OnBnClickedButton2();
 
 	void OnHdEventAdded(HdEvent* pEvent);
 	void OnHdEventModified(HdEvent* pEvent);
