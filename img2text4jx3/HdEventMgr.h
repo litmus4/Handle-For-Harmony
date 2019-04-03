@@ -27,6 +27,9 @@ public:
 	KeyClick* GetKeyClick(int iIndex);
 	int GetKeyClickNum();
 	void ClearAllKeyClicks();
+	HdEvent* Clone();
+	void CopyFrom(HdEvent* pEvent);
+
 	bool CheckAndPopClickTimeUp(float fTime, std::vector<KeyClick*>& vecOut);
 	void RestoreKeyClickFlow();
 

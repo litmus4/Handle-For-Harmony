@@ -75,6 +75,22 @@ void HdEvent::ClearAllKeyClicks()
 	m_mapClickFlow.clear();
 }
 
+HdEvent* HdEvent::Clone()
+{
+	HdEvent* pEvent = new HdEvent(m_strKeyword.c_str());
+	pEvent->m_vecClicks = m_vecClicks;
+	pEvent->RestoreKeyClickFlow();
+	return pEvent;
+}
+
+void HdEvent::CopyFrom(HdEvent* pEvent)
+{
+	if (!pEvent) return;
+	m_strKeyword = pEvent->m_strKeyword;
+	m_vecClicks = pEvent->m_vecClicks;
+	RestoreKeyClickFlow();
+}
+
 bool HdEvent::CheckAndPopClickTimeUp(float fTime, std::vector<KeyClick*>& vecOut)
 {
 	bool bRet = false;

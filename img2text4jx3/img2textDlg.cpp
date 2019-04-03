@@ -59,6 +59,7 @@ Cimg2textDlg::Cimg2textDlg(CWnd* pParent /*=NULL*/)
 	, m_y(0)
 	, m_pBench(NULL)
 	, m_bFixed(TRUE)
+	, m_pEditingEvent(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -430,9 +431,13 @@ void Cimg2textDlg::OnBnClickedButton2()
 		return;
 	CString sKey;
 	m_listBox.GetText(iSel, sKey);
-	CHdEventDlg dlg;
-	dlg.SetHdEvent(HdEventMgr::GetInstance()->GetEventByKeyword(sKey));
-	dlg.DoModal();
+	m_pEditingEvent = HdEventMgr::GetInstance()->GetEventByKeyword(sKey);
+	if (m_pEditingEvent)
+	{
+		CHdEventDlg dlg;
+		dlg.SetHdEvent(m_pEditingEvent->Clone());
+		dlg.DoModal();
+	}
 }
 
 void Cimg2textDlg::OnHdEventAdded(HdEvent* pEvent)
@@ -448,5 +453,23 @@ void Cimg2textDlg::OnHdEventAdded(HdEvent* pEvent)
 
 void Cimg2textDlg::OnHdEventModified(HdEvent* pEvent)
 {
-	//FLAGJK 修改前需要克隆
+	if (!m_pEditingEvent) return;
+	if (m_pEditingEvent->GetKeyword() != pEvent->GetKeyword())
+	{
+		HdEventMgr::GetInstance()->RemoveEventByKeyword(m_pEditingEvent->GetKeyword().c_str());
+		HdEventMgr::GetInstance()->AddEvent(pEvent);
+	}
+	else
+	{
+		m_pEditingEvent->CopyFrom(pEvent);
+		delete pEvent;
+	}
+	m_pEditingEvent = NULL;
+
+	m_listBox.ResetContent();
+	HdEventMgr::GetInstance()->ForEachEvent([this](HdEvent* pEvent, int i) -> bool
+	{
+		this->m_listBox.InsertString(-1, pEvent->GetKeyword().c_str());
+		return false;
+	});
 }

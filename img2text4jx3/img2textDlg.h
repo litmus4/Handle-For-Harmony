@@ -62,4 +62,6 @@ public:
 
 	void OnHdEventAdded(HdEvent* pEvent);
 	void OnHdEventModified(HdEvent* pEvent);
+
+	HdEvent* m_pEditingEvent;
 };
