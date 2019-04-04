@@ -86,6 +86,7 @@ BEGIN_MESSAGE_MAP(Cimg2textDlg, CDialog)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BUTTON1, &Cimg2textDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(IDC_BUTTON2, &Cimg2textDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, &Cimg2textDlg::OnBnClickedButton3)
 END_MESSAGE_MAP()
 
 
@@ -438,6 +439,26 @@ void Cimg2textDlg::OnBnClickedButton2()
 		dlg.SetHdEvent(m_pEditingEvent->Clone());
 		dlg.DoModal();
 	}
+}
+
+void Cimg2textDlg::OnBnClickedButton3()
+{
+	int iSel = m_listBox.GetCurSel();
+	if (iSel < 0 || iSel >= m_listBox.GetCount())
+		return;
+	if (MessageBox("确认删除事件？", "删除", MB_YESNO | MB_ICONWARNING) != IDYES)
+		return;
+
+	CString sKey;
+	m_listBox.GetText(iSel, sKey);
+	HdEventMgr::GetInstance()->RemoveEventByKeyword(sKey);
+
+	m_listBox.ResetContent();
+	HdEventMgr::GetInstance()->ForEachEvent([this](HdEvent* pEvent, int i) -> bool
+	{
+		this->m_listBox.InsertString(-1, pEvent->GetKeyword().c_str());
+		return false;
+	});
 }
 
 void Cimg2textDlg::OnHdEventAdded(HdEvent* pEvent)
