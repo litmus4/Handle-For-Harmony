@@ -5,6 +5,7 @@
 #include "afxwin.h"
 
 #include "PictureEx.h"
+#include <iostream>
 
 
 class IBench;
