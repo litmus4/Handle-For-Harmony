@@ -16,6 +16,7 @@
 // CJReverseDlg 对话框
 
 HHOOK CJReverseDlg::s_hKbHook = NULL;
+HHOOK CJReverseDlg::s_hMHook = NULL;
 CJReverseDlg* CJReverseDlg::s_pDlg = NULL;
 
 CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
@@ -53,6 +54,7 @@ BOOL CJReverseDlg::OnInitDialog()
 
 	::SetWindowPos(GetSafeHwnd(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE);
 	s_hKbHook = SetWindowsHookEx(WH_KEYBOARD_LL, &CJReverseDlg::KeyboardProc, NULL, NULL);
+	s_hMHook = SetWindowsHookEx(WH_MOUSE_LL, &CJReverseDlg::MouseProc, NULL, NULL);
 	s_pDlg = this;
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -102,7 +104,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 	{
 		switch (hookStruct->vkCode)
 		{
-		case VK_F6:
+		case 0x56://V
 			s_pDlg->m_bRevert = !s_pDlg->m_bRevert;
 			s_pDlg->m_btnOK.SetWindowText(s_pDlg->m_bRevert ? _T("关闭") : _T("确定"));
 			break;
@@ -130,14 +132,35 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 	return CallNextHookEx(s_hKbHook, iCode, wParam, lParam);
 }
 
+LRESULT CJReverseDlg::MouseProc(int iCode, WPARAM wParam, LPARAM lParam)
+{
+	if (!s_pDlg->m_bRevert)
+		return CallNextHookEx(s_hMHook, iCode, wParam, lParam);
+
+	int iMsg = wParam;
+	PMSLLHOOKSTRUCT hookStruct = (PMSLLHOOKSTRUCT)lParam;
+	int x = hookStruct->pt.x;
+	int y = hookStruct->pt.y;
+	int iDelta = (int)((hookStruct->mouseData >> 16) & 0xffff);
+
+	if (iMsg == WM_RBUTTONDOWN)
+		s_pDlg->Input(VK_SHIFT, true);
+	else if (iMsg == WM_RBUTTONUP)
+		s_pDlg->Input(VK_SHIFT, false);
+
+	return CallNextHookEx(s_hMHook, iCode, wParam, lParam);
+}
+
 void CJReverseDlg::Input(DWORD dwVk, bool bDown)
 {
-	//INPUT input;
-	//input.type = INPUT_KEYBOARD;
-	//input.ki.wVk = dwVk;
-	//input.ki.wScan = MapVirtualKey(dwVk, 0);
-	//input.ki.dwFlags = (bDown ? 0 : KEYEVENTF_KEYUP);
-	//SendInput(1, &input, sizeof(input));
+	/*
+	INPUT input;
+	input.type = INPUT_KEYBOARD;
+	input.ki.wVk = dwVk;
+	input.ki.wScan = MapVirtualKey(dwVk, 0);
+	input.ki.dwFlags = (bDown ? 0 : KEYEVENTF_KEYUP);
+	SendInput(1, &input, sizeof(input));
+	//*/
 	//TODOJK 驱动级
 }
 
@@ -162,5 +185,7 @@ void CJReverseDlg::OnBnClickedCancel()
 {
 	if (s_hKbHook)
 		UnhookWindowsHookEx(s_hKbHook);
+	if (s_hMHook)
+		UnhookWindowsHookEx(s_hMHook);
 	CDialogEx::OnCancel();
 }

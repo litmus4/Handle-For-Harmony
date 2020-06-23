@@ -32,6 +32,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	static LRESULT CALLBACK KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK MouseProc(int iCode, WPARAM wParam, LPARAM lParam);
 
 public:
 	void Input(DWORD dwVk, bool bDown);
@@ -41,6 +42,7 @@ public:
 
 protected:
 	static HHOOK s_hKbHook;
+	static HHOOK s_hMHook;
 	static CJReverseDlg* s_pDlg;
 	CButton m_btnOK;
 
