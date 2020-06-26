@@ -5,6 +5,7 @@
 #pragma once
 
 
+class CDD;
 // CJReverseDlg 对话框
 class CJReverseDlg : public CDialogEx
 {
@@ -37,6 +38,7 @@ protected:
 public:
 	void Input(DWORD dwVk, bool bDown);
 	DWORD HookToInputVk(DWORD dwVk);
+	int VkToDDCode(DWORD dwVk);
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
 
@@ -47,4 +49,5 @@ protected:
 	CButton m_btnOK;
 
 	bool m_bRevert;
+	CDD* m_pdd;
 };

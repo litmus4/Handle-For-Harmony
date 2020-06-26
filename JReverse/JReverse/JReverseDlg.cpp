@@ -7,6 +7,8 @@
 #include "JReverse.h"
 #include "JReverseDlg.h"
 #include "afxdialogex.h"
+#include "DD.h"
+#include <string>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -56,6 +58,16 @@ BOOL CJReverseDlg::OnInitDialog()
 	s_hKbHook = SetWindowsHookEx(WH_KEYBOARD_LL, &CJReverseDlg::KeyboardProc, NULL, NULL);
 	s_hMHook = SetWindowsHookEx(WH_MOUSE_LL, &CJReverseDlg::MouseProc, NULL, NULL);
 	s_pDlg = this;
+
+	m_pdd = new CDD();
+	std::string strPath = "D:\\likehole\\jk\\Handle-For-Harmony\\JReverse\\";
+#ifdef _DEBUG
+	strPath += "Debug\\";
+#else
+	strPath += "Release\\";
+#endif
+	strPath += "DD94687.32.dll";
+	m_pdd->GetFunAddr(CString(strPath.c_str()));
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -107,6 +119,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 		case 0x56://V
 			s_pDlg->m_bRevert = !s_pDlg->m_bRevert;
 			s_pDlg->m_btnOK.SetWindowText(s_pDlg->m_bRevert ? _T("关闭") : _T("确定"));
+			s_pDlg->Input(VK_SHIFT, s_pDlg->m_bRevert);
 			break;
 		case 0x5A://Z
 		case 0x58://X
@@ -161,7 +174,8 @@ void CJReverseDlg::Input(DWORD dwVk, bool bDown)
 	input.ki.dwFlags = (bDown ? 0 : KEYEVENTF_KEYUP);
 	SendInput(1, &input, sizeof(input));
 	//*/
-	//TODOJK 驱动级
+	//TODOJK winio
+	m_pdd->DD_key(VkToDDCode(dwVk), bDown ? 1 : 2);
 }
 
 DWORD CJReverseDlg::HookToInputVk(DWORD dwVk)
@@ -173,6 +187,19 @@ DWORD CJReverseDlg::HookToInputVk(DWORD dwVk)
 	case 0x43: return 0x51;//C-Q
 	}
 	return dwVk;
+}
+
+int CJReverseDlg::VkToDDCode(DWORD dwVk)
+{
+	switch (dwVk)
+	{
+	case 0x56: return 504;//V
+	case VK_SHIFT: return 500;//Shift
+	case 0x45: return 303;//E
+	case 0x57: return 302;//W
+	case 0x51: return 301;//Q
+	}
+	return -1;
 }
 
 void CJReverseDlg::OnBnClickedOk()
@@ -187,5 +214,6 @@ void CJReverseDlg::OnBnClickedCancel()
 		UnhookWindowsHookEx(s_hKbHook);
 	if (s_hMHook)
 		UnhookWindowsHookEx(s_hMHook);
+	delete m_pdd;
 	CDialogEx::OnCancel();
 }
