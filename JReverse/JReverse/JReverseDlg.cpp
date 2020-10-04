@@ -14,6 +14,8 @@
 #define new DEBUG_NEW
 #endif
 
+#define CHANGE_VK 0x31//VK_SHIFT
+
 
 // CJReverseDlg 对话框
 
@@ -119,7 +121,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 		case 0x56://V
 			s_pDlg->m_bRevert = !s_pDlg->m_bRevert;
 			s_pDlg->m_btnOK.SetWindowText(s_pDlg->m_bRevert ? _T("关闭") : _T("确定"));
-			s_pDlg->Input(VK_SHIFT, s_pDlg->m_bRevert);
+			s_pDlg->Input(CHANGE_VK, s_pDlg->m_bRevert);
 			break;
 		case 0x5A://Z
 		case 0x58://X
@@ -157,9 +159,9 @@ LRESULT CJReverseDlg::MouseProc(int iCode, WPARAM wParam, LPARAM lParam)
 	int iDelta = (int)((hookStruct->mouseData >> 16) & 0xffff);
 
 	if (iMsg == WM_RBUTTONDOWN)
-		s_pDlg->Input(VK_SHIFT, true);
+		s_pDlg->Input(CHANGE_VK, true);
 	else if (iMsg == WM_RBUTTONUP)
-		s_pDlg->Input(VK_SHIFT, false);
+		s_pDlg->Input(CHANGE_VK, false);
 
 	return CallNextHookEx(s_hMHook, iCode, wParam, lParam);
 }
@@ -195,6 +197,7 @@ int CJReverseDlg::VkToDDCode(DWORD dwVk)
 	{
 	case 0x56: return 504;//V
 	case VK_SHIFT: return 500;//Shift
+	case 0x31: return 201;//1
 	case 0x45: return 303;//E
 	case 0x57: return 302;//W
 	case 0x51: return 301;//Q
