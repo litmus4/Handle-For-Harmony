@@ -8,7 +8,9 @@
 #include "JReverseDlg.h"
 #include "afxdialogex.h"
 #include "DD.h"
+#include "ScreenShot.h"
 #include <string>
+#include <set>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -42,6 +44,7 @@ BEGIN_MESSAGE_MAP(CJReverseDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDCANCEL, &CJReverseDlg::OnBnClickedCancel)
 	ON_BN_CLICKED(IDOK, &CJReverseDlg::OnBnClickedOk)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -70,6 +73,8 @@ BOOL CJReverseDlg::OnInitDialog()
 #endif
 	strPath += "DD94687.32.dll";
 	m_pdd->GetFunAddr(CString(strPath.c_str()));
+
+	SetTimer(0, 200, 0);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -219,4 +224,55 @@ void CJReverseDlg::OnBnClickedCancel()
 		UnhookWindowsHookEx(s_hMHook);
 	delete m_pdd;
 	CDialogEx::OnCancel();
+}
+
+void CJReverseDlg::OnTimer(UINT nIDEvent)
+{
+	CScreenShot s;
+	POINT p;
+	p.x = 1;
+	p.y = 1;
+
+	wchar_t file[100];
+	memcpy(file, GetCachePath(), 100);
+	if (s.capture_and_savetobmp(p,	//left top
+		p.x + 3, p.y + 3 //right bottom
+		, file))
+	{
+		//FLAGJK
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+const TCHAR* CJReverseDlg::GetCachePath()
+{
+	if (m_wstrCachePath.empty())
+	{
+		TCHAR wszBuf[101];
+		memset(wszBuf, 0, 101);
+		GetLogicalDriveStrings(101, wszBuf);
+
+		std::set<TCHAR> setDrives;
+		int i = 0;
+		do
+		{
+			setDrives.insert(*(wszBuf + i));
+			do
+			{
+				i++;
+			} while (*(wszBuf + i) != 0);
+			i++;
+		} while (i < 100 && *(wszBuf + i) != 0);
+
+		TCHAR cDrive = 'N';
+		for (; cDrive >= 'D'; --cDrive)
+		{
+			if (setDrives.find(cDrive) != setDrives.end())
+				break;
+		}
+		m_wstrCachePath = L"://b.bmp";
+		m_wstrCachePath = cDrive + m_wstrCachePath;
+	}
+	return m_wstrCachePath.c_str();
 }

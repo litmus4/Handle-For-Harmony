@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include <string>
 
 
 class CDD;
@@ -42,6 +43,9 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
 
+	afx_msg void OnTimer(UINT nIDEvent);
+	const TCHAR* GetCachePath();
+
 protected:
 	static HHOOK s_hKbHook;
 	static HHOOK s_hMHook;
@@ -50,4 +54,6 @@ protected:
 
 	bool m_bRevert;
 	CDD* m_pdd;
+
+	std::wstring m_wstrCachePath;
 };
