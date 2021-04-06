@@ -228,6 +228,8 @@ void CJReverseDlg::OnBnClickedCancel()
 
 void CJReverseDlg::OnTimer(UINT nIDEvent)
 {
+	if (!m_bRevert) return;
+
 	CScreenShot s;
 	POINT p;
 	p.x = 1;

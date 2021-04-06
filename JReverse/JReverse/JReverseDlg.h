@@ -10,6 +10,38 @@ class CDD;
 // CJReverseDlg 对话框
 class CJReverseDlg : public CDialogEx
 {
+public:
+	enum EBuffTriggerType
+	{
+		FrequentClick,
+		ClickSwitch,
+		DownUpSwitch,
+	};
+
+	struct SBuffTigger
+	{
+	public:
+		POINT ptLeftTop;
+		LONG lWidth, lHeight;
+		std::wstring wstrFileName;
+		int iSampleX, iSampleY;
+		BYTE cRedLow, cGreenLow, cBlueLow;
+		BYTE cRedHigh, cGreenHigh, cBlueHigh;
+
+		EBuffTriggerType eType;
+		DWORD dwVk;
+		int iClickTickNum;
+		int iFreqSpaceTickNum;
+
+	private:
+		bool bBuff;
+		bool bSpecial;
+		bool bRunning;
+
+		int iCurTickNum;
+		bool bFreqDown;
+	};
+
 // 构造
 public:
 	CJReverseDlg(CWnd* pParent = nullptr);	// 标准构造函数
