@@ -20,7 +20,7 @@ public:
 		DownUpSwitch,
 	};
 
-	struct SBuffTigger
+	struct SBuffTrigger
 	{
 	public:
 		POINT ptLeftTop;
@@ -79,6 +79,7 @@ public:
 
 	afx_msg void OnTimer(UINT nIDEvent);
 	const TCHAR* GetCachePath(const TCHAR* wszName);
+	bool IsBuffBmpCorrect(const TCHAR* wszFile, const SBuffTrigger& trigger);
 
 protected:
 	static HHOOK s_hKbHook;
@@ -90,5 +91,5 @@ protected:
 	CDD* m_pdd;
 
 	std::map<std::wstring, std::wstring> m_mapCachePaths;
-	std::vector<SBuffTigger> m_vecBuffTriggers;
+	std::vector<SBuffTrigger> m_vecBuffTriggers;
 };

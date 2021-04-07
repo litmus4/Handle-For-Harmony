@@ -234,7 +234,7 @@ void CJReverseDlg::OnTimer(UINT nIDEvent)
 		return;
 	}
 
-	std::vector<SBuffTigger>::iterator iter = m_vecBuffTriggers.begin();
+	std::vector<SBuffTrigger>::iterator iter = m_vecBuffTriggers.begin();
 	for (; iter != m_vecBuffTriggers.end(); iter++)
 	{
 		CScreenShot s;
@@ -245,6 +245,7 @@ void CJReverseDlg::OnTimer(UINT nIDEvent)
 			, file))
 		{
 			//FLAGJK
+			IsBuffBmpCorrect(file, *iter);
 		}
 	}
 
@@ -288,4 +289,30 @@ const TCHAR* CJReverseDlg::GetCachePath(const TCHAR* wszName)
 		iter->second = cDrive + iter->second;
 	}
 	return iter->second.c_str();
+}
+
+bool CJReverseDlg::IsBuffBmpCorrect(const TCHAR* wszFile, const SBuffTrigger& trigger)
+{
+	//if (!wszFile) return false;
+	HBITMAP hBmp = (HBITMAP)LoadImage(NULL, wszFile, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+	if (!hBmp) return false;
+
+	BITMAP bmp;
+	int iRet = GetObject(hBmp, sizeof(BITMAP), &bmp);
+	if (iRet)
+	{
+		BYTE* pBits = (BYTE*)bmp.bmBits;
+		int iFormat = bmp.bmBitsPixel / 8;
+		BYTE* pPixel = pBits + (trigger.lHeight - trigger.iSampleY - 1) * bmp.bmWidthBytes + trigger.iSampleX * iFormat;
+
+		int iPlus = (iFormat == 4 ? 1 : 0);
+		BYTE cRed = *(pPixel + (2 + iPlus));
+		BYTE cGreen = *(pPixel + (1 + iPlus));
+		BYTE cBlue = *(pPixel + iPlus);
+
+		return ((trigger.cRedLow <= cRed && cRed <= trigger.cRedHigh) &&
+			(trigger.cGreenLow <= cGreen && cGreen <= trigger.cGreenHigh) &&
+			(trigger.cBlueLow <= cBlue && cBlue <= trigger.cBlueHigh));
+	}
+	return false;
 }
