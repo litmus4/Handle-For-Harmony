@@ -4,6 +4,8 @@
 
 #pragma once
 #include <string>
+#include <map>
+#include <vector>
 
 
 class CDD;
@@ -76,7 +78,7 @@ public:
 	afx_msg void OnBnClickedCancel();
 
 	afx_msg void OnTimer(UINT nIDEvent);
-	const TCHAR* GetCachePath();
+	const TCHAR* GetCachePath(const TCHAR* wszName);
 
 protected:
 	static HHOOK s_hKbHook;
@@ -87,5 +89,6 @@ protected:
 	bool m_bRevert;
 	CDD* m_pdd;
 
-	std::wstring m_wstrCachePath;
+	std::map<std::wstring, std::wstring> m_mapCachePaths;
+	std::vector<SBuffTigger> m_vecBuffTriggers;
 };

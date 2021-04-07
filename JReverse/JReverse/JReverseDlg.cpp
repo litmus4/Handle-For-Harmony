@@ -228,29 +228,38 @@ void CJReverseDlg::OnBnClickedCancel()
 
 void CJReverseDlg::OnTimer(UINT nIDEvent)
 {
-	if (!m_bRevert) return;
-
-	CScreenShot s;
-	POINT p;
-	p.x = 1;
-	p.y = 1;
-
-	wchar_t file[100];
-	memcpy(file, GetCachePath(), 100);
-	if (s.capture_and_savetobmp(p,	//left top
-		p.x + 3, p.y + 3 //right bottom
-		, file))
+	if (!m_bRevert)
 	{
-		//FLAGJK
+		CDialogEx::OnTimer(nIDEvent);
+		return;
+	}
+
+	std::vector<SBuffTigger>::iterator iter = m_vecBuffTriggers.begin();
+	for (; iter != m_vecBuffTriggers.end(); iter++)
+	{
+		CScreenShot s;
+		wchar_t file[100];
+		memcpy(file, GetCachePath(iter->wstrFileName.c_str()), 100);
+		if (s.capture_and_savetobmp(iter->ptLeftTop,	//left top
+			iter->ptLeftTop.x + iter->lWidth, iter->ptLeftTop.y + iter->lHeight //right bottom
+			, file))
+		{
+			//FLAGJK
+		}
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
 }
 
-const TCHAR* CJReverseDlg::GetCachePath()
+const TCHAR* CJReverseDlg::GetCachePath(const TCHAR* wszName)
 {
-	if (m_wstrCachePath.empty())
+	if (!wszName) return NULL;
+
+	std::map<std::wstring, std::wstring>::iterator iter = m_mapCachePaths.find(wszName);
+	if (iter == m_mapCachePaths.end())
 	{
+		iter = m_mapCachePaths.insert(std::pair<std::wstring, std::wstring>(wszName, std::wstring())).first;
+
 		TCHAR wszBuf[101];
 		memset(wszBuf, 0, 101);
 		GetLogicalDriveStrings(101, wszBuf);
@@ -273,8 +282,10 @@ const TCHAR* CJReverseDlg::GetCachePath()
 			if (setDrives.find(cDrive) != setDrives.end())
 				break;
 		}
-		m_wstrCachePath = L"://b.bmp";
-		m_wstrCachePath = cDrive + m_wstrCachePath;
+
+		std::wstring strName = wszName;
+		iter->second = L"://" + strName + L".bmp";
+		iter->second = cDrive + iter->second;
 	}
-	return m_wstrCachePath.c_str();
+	return iter->second.c_str();
 }
