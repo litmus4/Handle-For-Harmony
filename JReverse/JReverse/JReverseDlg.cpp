@@ -21,6 +21,52 @@
 
 // CJReverseDlg 对话框
 
+void CJReverseDlg::SBuffTrigger::CheckBuff(bool bCorrect)
+{
+	if (!pDlg) return;
+
+	if (bCorrect)
+	{
+		if (!bBuff)
+		{
+			bBuff = true;
+			bSpecial = true;
+			if (pDlg->IsInputTriggered())
+			{
+				bRunning = true;
+				//FLAGJK
+			}
+		}
+	}
+	else
+	{
+		if (bBuff)
+		{
+			bBuff = false;
+			bRunning = false;
+			//
+		}
+	}
+}
+
+void CJReverseDlg::SBuffTrigger::CheckInput(bool bInput)
+{
+	if (bInput)
+	{
+		if (bBuff && bSpecial)
+		{
+			bRunning = true;
+			//
+		}
+	}
+	else
+	{
+		bSpecial = false;
+		bRunning = false;
+		//
+	}
+}
+
 HHOOK CJReverseDlg::s_hKbHook = NULL;
 HHOOK CJReverseDlg::s_hMHook = NULL;
 CJReverseDlg* CJReverseDlg::s_pDlg = NULL;
@@ -31,6 +77,7 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
 	m_bRevert = false;
+	m_bInputTrigger = false;
 }
 
 void CJReverseDlg::DoDataExchange(CDataExchange* pDX)
@@ -127,6 +174,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			s_pDlg->m_bRevert = !s_pDlg->m_bRevert;
 			s_pDlg->m_btnOK.SetWindowText(s_pDlg->m_bRevert ? _T("关闭") : _T("确定"));
 			s_pDlg->Input(CHANGE_VK, s_pDlg->m_bRevert);
+			s_pDlg->SetInputTrigger(s_pDlg->m_bRevert);
 			break;
 		case 0x5A://Z
 		case 0x58://X
@@ -164,9 +212,15 @@ LRESULT CJReverseDlg::MouseProc(int iCode, WPARAM wParam, LPARAM lParam)
 	int iDelta = (int)((hookStruct->mouseData >> 16) & 0xffff);
 
 	if (iMsg == WM_RBUTTONDOWN)
+	{
 		s_pDlg->Input(CHANGE_VK, true);
+		s_pDlg->SetInputTrigger(true);
+	}
 	else if (iMsg == WM_RBUTTONUP)
+	{
 		s_pDlg->Input(CHANGE_VK, false);
+		s_pDlg->SetInputTrigger(false);
+	}
 
 	return CallNextHookEx(s_hMHook, iCode, wParam, lParam);
 }
@@ -244,8 +298,7 @@ void CJReverseDlg::OnTimer(UINT nIDEvent)
 			iter->ptLeftTop.x + iter->lWidth, iter->ptLeftTop.y + iter->lHeight //right bottom
 			, file))
 		{
-			//FLAGJK
-			IsBuffBmpCorrect(file, *iter);
+			iter->CheckBuff(IsBuffBmpCorrect(file, *iter));
 		}
 	}
 
@@ -315,4 +368,20 @@ bool CJReverseDlg::IsBuffBmpCorrect(const TCHAR* wszFile, const SBuffTrigger& tr
 			(trigger.cBlueLow <= cBlue && cBlue <= trigger.cBlueHigh));
 	}
 	return false;
+}
+
+void CJReverseDlg::SetInputTrigger(bool bInput)
+{
+	if (bInput == m_bInputTrigger)
+		return;
+	m_bInputTrigger = bInput;
+
+	std::vector<SBuffTrigger>::iterator iter = m_vecBuffTriggers.begin();
+	for (; iter != m_vecBuffTriggers.end(); iter++)
+		iter->CheckInput(bInput);
+}
+
+bool CJReverseDlg::IsInputTriggered()
+{
+	return m_bInputTrigger;
 }

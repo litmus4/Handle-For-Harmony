@@ -23,6 +23,12 @@ public:
 	struct SBuffTrigger
 	{
 	public:
+		SBuffTrigger() : bBuff(false), bSpecial(false), bRunning(false),
+			iCurTickNum(-1), bFreqDown(false), pDlg(NULL) {}
+
+		void CheckBuff(bool bCorrect);
+		void CheckInput(bool bInput);
+
 		POINT ptLeftTop;
 		LONG lWidth, lHeight;
 		std::wstring wstrFileName;
@@ -34,6 +40,8 @@ public:
 		DWORD dwVk;
 		int iClickTickNum;
 		int iFreqSpaceTickNum;
+
+		CJReverseDlg* pDlg;
 
 	private:
 		bool bBuff;
@@ -80,6 +88,8 @@ public:
 	afx_msg void OnTimer(UINT nIDEvent);
 	const TCHAR* GetCachePath(const TCHAR* wszName);
 	bool IsBuffBmpCorrect(const TCHAR* wszFile, const SBuffTrigger& trigger);
+	void SetInputTrigger(bool bInput);
+	bool IsInputTriggered();
 
 protected:
 	static HHOOK s_hKbHook;
@@ -92,4 +102,5 @@ protected:
 
 	std::map<std::wstring, std::wstring> m_mapCachePaths;
 	std::vector<SBuffTrigger> m_vecBuffTriggers;
+	bool m_bInputTrigger;
 };
