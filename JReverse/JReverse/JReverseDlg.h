@@ -24,10 +24,13 @@ public:
 	{
 	public:
 		SBuffTrigger() : bBuff(false), bSpecial(false), bRunning(false),
-			iCurTickNum(-1), bFreqDown(false), pDlg(NULL) {}
+			iCurTickNum(-1), bFreqDown(false), iClickSwQue(0), pDlg(NULL) {}
 
 		void CheckBuff(bool bCorrect);
 		void CheckInput(bool bInput);
+		bool CheckStart();
+		int CheckTick();
+		int CheckEnd();
 
 		POINT ptLeftTop;
 		LONG lWidth, lHeight;
@@ -50,6 +53,7 @@ public:
 
 		int iCurTickNum;
 		bool bFreqDown;
+		int iClickSwQue;
 	};
 
 // 构造
@@ -90,6 +94,9 @@ public:
 	bool IsBuffBmpCorrect(const TCHAR* wszFile, const SBuffTrigger& trigger);
 	void SetInputTrigger(bool bInput);
 	bool IsInputTriggered();
+	void Start(SBuffTrigger& trigger);
+	void Tick(SBuffTrigger& trigger);
+	void End(SBuffTrigger& trigger);
 
 protected:
 	static HHOOK s_hKbHook;

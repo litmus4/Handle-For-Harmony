@@ -34,7 +34,7 @@ void CJReverseDlg::SBuffTrigger::CheckBuff(bool bCorrect)
 			if (pDlg->IsInputTriggered())
 			{
 				bRunning = true;
-				//FLAGJK
+				pDlg->Start(*this);
 			}
 		}
 	}
@@ -44,27 +44,126 @@ void CJReverseDlg::SBuffTrigger::CheckBuff(bool bCorrect)
 		{
 			bBuff = false;
 			bRunning = false;
-			//
+			pDlg->End(*this);
 		}
 	}
 }
 
 void CJReverseDlg::SBuffTrigger::CheckInput(bool bInput)
 {
+	if (!pDlg) return;
+
 	if (bInput)
 	{
 		if (bBuff && bSpecial)
 		{
 			bRunning = true;
-			//
+			pDlg->Start(*this);
 		}
 	}
 	else
 	{
 		bSpecial = false;
 		bRunning = false;
-		//
+		pDlg->End(*this);
 	}
+}
+
+bool CJReverseDlg::SBuffTrigger::CheckStart()
+{
+	switch (eType)
+	{
+	case EBuffTriggerType::FrequentClick:
+		iCurTickNum = 0;
+		bFreqDown = true;
+		return true;
+	case EBuffTriggerType::ClickSwitch:
+		if (iCurTickNum < 0)
+		{
+			iCurTickNum = 0;
+			return true;
+		}
+		iClickSwQue++;
+		return false;
+	case EBuffTriggerType::DownUpSwitch:
+		return true;
+	}
+	return false;
+}
+
+int CJReverseDlg::SBuffTrigger::CheckTick()
+{
+	switch (eType)
+	{
+	case EBuffTriggerType::FrequentClick:
+		if (iCurTickNum < 0) return 0;
+		iCurTickNum++;
+		if (bFreqDown)
+		{
+			if (iCurTickNum >= iClickTickNum)
+			{
+				iCurTickNum = 0;
+				bFreqDown = false;
+				return -1;
+			}
+		}
+		else
+		{
+			if (iCurTickNum >= iFreqSpaceTickNum)
+			{
+				iCurTickNum = 0;
+				bFreqDown = true;
+				return 1;
+			}
+		}
+		break;
+	case EBuffTriggerType::ClickSwitch:
+		if (iCurTickNum >= 0)
+		{
+			iCurTickNum++;
+			if (iCurTickNum >= iClickTickNum)
+			{
+				iCurTickNum = -1;
+				return -1;
+			}
+		}
+		else
+		{
+			if (iClickSwQue > 0)
+			{
+				iClickSwQue--;
+				iCurTickNum = 0;
+				return 1;
+			}
+		}
+		break;
+	}
+	return 0;
+}
+
+int CJReverseDlg::SBuffTrigger::CheckEnd()
+{
+	switch (eType)
+	{
+	case EBuffTriggerType::FrequentClick:
+	{
+		iCurTickNum = -1;
+		int iRet = (bFreqDown ? -1 : 0);
+		bFreqDown = false;
+		return iRet;
+	}
+	case EBuffTriggerType::ClickSwitch:
+		if (iCurTickNum < 0)
+		{
+			iCurTickNum = 0;
+			return 1;
+		}
+		iClickSwQue++;
+		return 0;
+	case EBuffTriggerType::DownUpSwitch:
+		return -1;
+	}
+	return 0;
 }
 
 HHOOK CJReverseDlg::s_hKbHook = NULL;
@@ -300,6 +399,8 @@ void CJReverseDlg::OnTimer(UINT nIDEvent)
 		{
 			iter->CheckBuff(IsBuffBmpCorrect(file, *iter));
 		}
+
+		Tick(*iter);
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
@@ -384,4 +485,28 @@ void CJReverseDlg::SetInputTrigger(bool bInput)
 bool CJReverseDlg::IsInputTriggered()
 {
 	return m_bInputTrigger;
+}
+
+void CJReverseDlg::Start(SBuffTrigger& trigger)
+{
+	if (trigger.CheckStart())
+		Input(trigger.dwVk, true);
+}
+
+void CJReverseDlg::Tick(SBuffTrigger& trigger)
+{
+	int iRet = trigger.CheckTick();
+	if (iRet > 0)
+		Input(trigger.dwVk, true);
+	else if (iRet < 0)
+		Input(trigger.dwVk, false);
+}
+
+void CJReverseDlg::End(SBuffTrigger& trigger)
+{
+	int iRet = trigger.CheckEnd();
+	if (iRet > 0)
+		Input(trigger.dwVk, true);
+	else if (iRet < 0)
+		Input(trigger.dwVk, false);
 }
