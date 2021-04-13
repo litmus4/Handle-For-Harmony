@@ -16,7 +16,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define CHANGE_VK 0x31//VK_SHIFT
+#define CHANGE_VK VK_DIVIDE
 
 
 // CJReverseDlg 对话框
@@ -220,6 +220,7 @@ BOOL CJReverseDlg::OnInitDialog()
 	strPath += "DD94687.32.dll";
 	m_pdd->GetFunAddr(CString(strPath.c_str()));
 
+	InitBuffTriggers();
 	SetTimer(0, 200, 0);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -356,6 +357,8 @@ int CJReverseDlg::VkToDDCode(DWORD dwVk)
 	case 0x56: return 504;//V
 	case VK_SHIFT: return 500;//Shift
 	case 0x31: return 201;//1
+	case VK_DIVIDE: return 0;/// FLAGJK
+	case 0x35: return 0;//5 FLAGJK
 	case 0x45: return 303;//E
 	case 0x57: return 302;//W
 	case 0x51: return 301;//Q
@@ -377,6 +380,51 @@ void CJReverseDlg::OnBnClickedCancel()
 		UnhookWindowsHookEx(s_hMHook);
 	delete m_pdd;
 	CDialogEx::OnCancel();
+}
+
+void CJReverseDlg::InitBuffTriggers()
+{
+	SBuffTrigger DaHuaTrigger;
+	DaHuaTrigger.ptLeftTop.x = 0;//FLAGJK
+	DaHuaTrigger.ptLeftTop.y = 0;//
+	DaHuaTrigger.lWidth = 3;
+	DaHuaTrigger.lHeight = 3;
+	DaHuaTrigger.wstrFileName = L"a";
+	DaHuaTrigger.iSampleX = 1;
+	DaHuaTrigger.iSampleY = 1;
+	DaHuaTrigger.cRedLow = 0;//
+	DaHuaTrigger.cGreenLow = 0;//
+	DaHuaTrigger.cBlueLow = 0;//
+	DaHuaTrigger.cRedHigh = 1;//
+	DaHuaTrigger.cGreenHigh = 1;//
+	DaHuaTrigger.cBlueHigh = 1;//
+	DaHuaTrigger.eType = EBuffTriggerType::ClickSwitch;
+	DaHuaTrigger.dwVk = VK_DIVIDE;///
+	DaHuaTrigger.iClickTickNum = 1;
+	DaHuaTrigger.iFreqSpaceTickNum = 0;
+	DaHuaTrigger.pDlg = this;
+	m_vecBuffTriggers.push_back(DaHuaTrigger);
+
+	SBuffTrigger WuHuiTrigger;
+	WuHuiTrigger.ptLeftTop.x = 0;//
+	WuHuiTrigger.ptLeftTop.y = 0;//
+	WuHuiTrigger.lWidth = 3;
+	WuHuiTrigger.lHeight = 3;
+	WuHuiTrigger.wstrFileName = L"b";
+	WuHuiTrigger.iSampleX = 1;
+	WuHuiTrigger.iSampleY = 1;
+	WuHuiTrigger.cRedLow = 0;//
+	WuHuiTrigger.cGreenLow = 0;//
+	WuHuiTrigger.cBlueLow = 0;//
+	WuHuiTrigger.cRedHigh = 1;//
+	WuHuiTrigger.cGreenHigh = 1;//
+	WuHuiTrigger.cBlueHigh = 1;//
+	WuHuiTrigger.eType = EBuffTriggerType::FrequentClick;
+	WuHuiTrigger.dwVk = 0x35;//5
+	WuHuiTrigger.iClickTickNum = 1;
+	WuHuiTrigger.iFreqSpaceTickNum = 1;
+	WuHuiTrigger.pDlg = this;
+	m_vecBuffTriggers.push_back(WuHuiTrigger);
 }
 
 void CJReverseDlg::OnTimer(UINT nIDEvent)

@@ -89,6 +89,7 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
 
+	void InitBuffTriggers();
 	afx_msg void OnTimer(UINT nIDEvent);
 	const TCHAR* GetCachePath(const TCHAR* wszName);
 	bool IsBuffBmpCorrect(const TCHAR* wszFile, const SBuffTrigger& trigger);
