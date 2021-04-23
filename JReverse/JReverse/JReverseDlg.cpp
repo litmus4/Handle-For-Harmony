@@ -357,8 +357,8 @@ int CJReverseDlg::VkToDDCode(DWORD dwVk)
 	case 0x56: return 504;//V
 	case VK_SHIFT: return 500;//Shift
 	case 0x31: return 201;//1
-	case VK_DIVIDE: return 0;/// FLAGJK
-	case 0x35: return 0;//5 FLAGJK
+	case VK_DIVIDE: return 811;///
+	case 0x35: return 205;//5
 	case 0x45: return 303;//E
 	case 0x57: return 302;//W
 	case 0x51: return 301;//Q
@@ -385,8 +385,8 @@ void CJReverseDlg::OnBnClickedCancel()
 void CJReverseDlg::InitBuffTriggers()
 {
 	SBuffTrigger DaHuaTrigger;
-	DaHuaTrigger.ptLeftTop.x = 0;//FLAGJK
-	DaHuaTrigger.ptLeftTop.y = 0;//
+	DaHuaTrigger.ptLeftTop.x = 242;//FLAGJK
+	DaHuaTrigger.ptLeftTop.y = 814;//
 	DaHuaTrigger.lWidth = 3;
 	DaHuaTrigger.lHeight = 3;
 	DaHuaTrigger.wstrFileName = L"a";
@@ -406,8 +406,8 @@ void CJReverseDlg::InitBuffTriggers()
 	m_vecBuffTriggers.push_back(DaHuaTrigger);
 
 	SBuffTrigger WuHuiTrigger;
-	WuHuiTrigger.ptLeftTop.x = 0;//
-	WuHuiTrigger.ptLeftTop.y = 0;//
+	WuHuiTrigger.ptLeftTop.x = 282;//
+	WuHuiTrigger.ptLeftTop.y = 814;//
 	WuHuiTrigger.lWidth = 3;
 	WuHuiTrigger.lHeight = 3;
 	WuHuiTrigger.wstrFileName = L"b";
@@ -511,6 +511,11 @@ bool CJReverseDlg::IsBuffBmpCorrect(const TCHAR* wszFile, const SBuffTrigger& tr
 		BYTE cRed = *(pPixel + (2 + iPlus));
 		BYTE cGreen = *(pPixel + (1 + iPlus));
 		BYTE cBlue = *(pPixel + iPlus);
+		//*testtemp
+		TCHAR wszBuf[256];
+		swprintf_s(wszBuf, 256, L"$$$$$$ %s %d %d %d\n", wszFile, cRed, cGreen, cBlue);
+		OutputDebugString(wszBuf);
+		//*/
 
 		return ((trigger.cRedLow <= cRed && cRed <= trigger.cRedHigh) &&
 			(trigger.cGreenLow <= cGreen && cGreen <= trigger.cGreenHigh) &&
