@@ -99,6 +99,9 @@ public:
 	void Tick(SBuffTrigger& trigger);
 	void End(SBuffTrigger& trigger);
 
+	void InputNormalChangeEx(bool bDown);
+	void TickNormalChangeEx();
+
 protected:
 	static HHOOK s_hKbHook;
 	static HHOOK s_hMHook;
@@ -111,4 +114,8 @@ protected:
 	std::map<std::wstring, std::wstring> m_mapCachePaths;
 	std::vector<SBuffTrigger> m_vecBuffTriggers;
 	bool m_bInputTrigger;
+
+	bool m_bNormalChangeClickSwitch;
+	int m_iCurNormalTickNum;
+	int m_iNormalClickSwQue;
 };

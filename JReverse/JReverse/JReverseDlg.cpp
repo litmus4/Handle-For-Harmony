@@ -177,6 +177,9 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 
 	m_bRevert = false;
 	m_bInputTrigger = false;
+	m_bNormalChangeClickSwitch = true;
+	m_iCurNormalTickNum = -1;
+	m_iNormalClickSwQue = 0;
 }
 
 void CJReverseDlg::DoDataExchange(CDataExchange* pDX)
@@ -273,7 +276,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 		case 0x56://V
 			s_pDlg->m_bRevert = !s_pDlg->m_bRevert;
 			s_pDlg->m_btnOK.SetWindowText(s_pDlg->m_bRevert ? _T("关闭") : _T("确定"));
-			s_pDlg->Input(CHANGE_VK, s_pDlg->m_bRevert);
+			s_pDlg->InputNormalChangeEx(s_pDlg->m_bRevert);
 			s_pDlg->SetInputTrigger(s_pDlg->m_bRevert);
 			break;
 		case 0x5A://Z
@@ -313,12 +316,12 @@ LRESULT CJReverseDlg::MouseProc(int iCode, WPARAM wParam, LPARAM lParam)
 
 	if (iMsg == WM_RBUTTONDOWN)
 	{
-		s_pDlg->Input(CHANGE_VK, true);
+		s_pDlg->InputNormalChangeEx(true);
 		s_pDlg->SetInputTrigger(true);
 	}
 	else if (iMsg == WM_RBUTTONUP)
 	{
-		s_pDlg->Input(CHANGE_VK, false);
+		s_pDlg->InputNormalChangeEx(false);
 		s_pDlg->SetInputTrigger(false);
 	}
 
@@ -429,27 +432,25 @@ void CJReverseDlg::InitBuffTriggers()
 
 void CJReverseDlg::OnTimer(UINT nIDEvent)
 {
-	if (!m_bRevert)
-	{
-		CDialogEx::OnTimer(nIDEvent);
-		return;
-	}
-
 	std::vector<SBuffTrigger>::iterator iter = m_vecBuffTriggers.begin();
 	for (; iter != m_vecBuffTriggers.end(); iter++)
 	{
-		CScreenShot s;
-		wchar_t file[100];
-		memcpy(file, GetCachePath(iter->wstrFileName.c_str()), 100);
-		if (s.capture_and_savetobmp(iter->ptLeftTop,	//left top
-			iter->ptLeftTop.x + iter->lWidth, iter->ptLeftTop.y + iter->lHeight //right bottom
-			, file))
+		if (m_bRevert)
 		{
-			iter->CheckBuff(IsBuffBmpCorrect(file, *iter));
+			CScreenShot s;
+			wchar_t file[100];
+			memcpy(file, GetCachePath(iter->wstrFileName.c_str()), 100);
+			if (s.capture_and_savetobmp(iter->ptLeftTop,	//left top
+				iter->ptLeftTop.x + iter->lWidth, iter->ptLeftTop.y + iter->lHeight //right bottom
+				, file))
+			{
+				iter->CheckBuff(IsBuffBmpCorrect(file, *iter));
+			}
 		}
-
 		Tick(*iter);
 	}
+
+	TickNormalChangeEx();
 
 	CDialogEx::OnTimer(nIDEvent);
 }
@@ -511,11 +512,6 @@ bool CJReverseDlg::IsBuffBmpCorrect(const TCHAR* wszFile, const SBuffTrigger& tr
 		BYTE cRed = *(pPixel + (2 + iPlus));
 		BYTE cGreen = *(pPixel + (1 + iPlus));
 		BYTE cBlue = *(pPixel + iPlus);
-		//*testtemp
-		TCHAR wszBuf[256];
-		swprintf_s(wszBuf, 256, L"$$$$$$ %s %d %d %d\n", wszFile, cRed, cGreen, cBlue);
-		OutputDebugString(wszBuf);
-		//*/
 
 		return ((trigger.cRedLow <= cRed && cRed <= trigger.cRedHigh) &&
 			(trigger.cGreenLow <= cGreen && cGreen <= trigger.cGreenHigh) &&
@@ -562,4 +558,45 @@ void CJReverseDlg::End(SBuffTrigger& trigger)
 		Input(trigger.dwVk, true);
 	else if (iRet < 0)
 		Input(trigger.dwVk, false);
+}
+
+void CJReverseDlg::InputNormalChangeEx(bool bDown)
+{
+	if (m_bNormalChangeClickSwitch)
+	{
+		if (m_iCurNormalTickNum < 0)
+		{
+			m_iCurNormalTickNum = 0;
+			Input(CHANGE_VK, true);
+		}
+		else
+			m_iNormalClickSwQue++;
+	}
+	else
+		Input(CHANGE_VK, bDown);
+}
+
+void CJReverseDlg::TickNormalChangeEx()
+{
+	if (!m_bNormalChangeClickSwitch)
+		return;
+
+	if (m_iCurNormalTickNum >= 0)
+	{
+		m_iCurNormalTickNum++;
+		if (m_iCurNormalTickNum >= 1)
+		{
+			m_iCurNormalTickNum = -1;
+			Input(CHANGE_VK, false);
+		}
+	}
+	else
+	{
+		if (m_iNormalClickSwQue > 0)
+		{
+			m_iNormalClickSwQue--;
+			m_iCurNormalTickNum = 0;
+			Input(CHANGE_VK, true);
+		}
+	}
 }
