@@ -118,4 +118,5 @@ protected:
 	bool m_bNormalChangeClickSwitch;
 	int m_iCurNormalTickNum;
 	int m_iNormalClickSwQue;
+	bool m_bMacroDown;
 };

@@ -16,7 +16,9 @@
 #define new DEBUG_NEW
 #endif
 
-#define CHANGE_VK VK_DIVIDE
+#define CHANGE_VK VK_F6
+#define MACRO 1
+#define MACRO_VK 0x46
 
 
 // CJReverseDlg 对话框
@@ -180,6 +182,7 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 	m_bNormalChangeClickSwitch = true;
 	m_iCurNormalTickNum = -1;
 	m_iNormalClickSwQue = 0;
+	m_bMacroDown = false;
 }
 
 void CJReverseDlg::DoDataExchange(CDataExchange* pDX)
@@ -224,7 +227,11 @@ BOOL CJReverseDlg::OnInitDialog()
 	m_pdd->GetFunAddr(CString(strPath.c_str()));
 
 	InitBuffTriggers();
+#if MACRO
+	SetTimer(0, 50, 0);
+#else
 	SetTimer(0, 200, 0);
+#endif
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -277,7 +284,8 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			s_pDlg->m_bRevert = !s_pDlg->m_bRevert;
 			s_pDlg->m_btnOK.SetWindowText(s_pDlg->m_bRevert ? _T("关闭") : _T("确定"));
 			s_pDlg->InputNormalChangeEx(s_pDlg->m_bRevert);
-			s_pDlg->SetInputTrigger(s_pDlg->m_bRevert);
+			//s_pDlg->SetInputTrigger(s_pDlg->m_bRevert);
+			if (!s_pDlg->m_bRevert) s_pDlg->m_bMacroDown = false;
 			break;
 		case 0x5A://Z
 		case 0x58://X
@@ -317,12 +325,12 @@ LRESULT CJReverseDlg::MouseProc(int iCode, WPARAM wParam, LPARAM lParam)
 	if (iMsg == WM_RBUTTONDOWN)
 	{
 		s_pDlg->InputNormalChangeEx(true);
-		s_pDlg->SetInputTrigger(true);
+		//s_pDlg->SetInputTrigger(true);
 	}
 	else if (iMsg == WM_RBUTTONUP)
 	{
 		s_pDlg->InputNormalChangeEx(false);
-		s_pDlg->SetInputTrigger(false);
+		//s_pDlg->SetInputTrigger(false);
 	}
 
 	return CallNextHookEx(s_hMHook, iCode, wParam, lParam);
@@ -365,6 +373,8 @@ int CJReverseDlg::VkToDDCode(DWORD dwVk)
 	case 0x45: return 303;//E
 	case 0x57: return 302;//W
 	case 0x51: return 301;//Q
+	case VK_F6:	return 106;//F6
+	case 0x46: return 404;//F
 	}
 	return -1;
 }
@@ -406,7 +416,7 @@ void CJReverseDlg::InitBuffTriggers()
 	DaHuaTrigger.iClickTickNum = 1;
 	DaHuaTrigger.iFreqSpaceTickNum = 0;
 	DaHuaTrigger.pDlg = this;
-	m_vecBuffTriggers.push_back(DaHuaTrigger);
+	//m_vecBuffTriggers.push_back(DaHuaTrigger);
 
 	SBuffTrigger WuHuiTrigger;
 	WuHuiTrigger.ptLeftTop.x = 282;//
@@ -427,7 +437,7 @@ void CJReverseDlg::InitBuffTriggers()
 	WuHuiTrigger.iClickTickNum = 1;
 	WuHuiTrigger.iFreqSpaceTickNum = 1;
 	WuHuiTrigger.pDlg = this;
-	m_vecBuffTriggers.push_back(WuHuiTrigger);
+	//m_vecBuffTriggers.push_back(WuHuiTrigger);
 }
 
 void CJReverseDlg::OnTimer(UINT nIDEvent)
@@ -451,6 +461,14 @@ void CJReverseDlg::OnTimer(UINT nIDEvent)
 	}
 
 	TickNormalChangeEx();
+
+#if MACRO
+	if (m_bRevert)
+	{
+		m_bMacroDown = !m_bMacroDown;
+		Input(MACRO_VK, m_bMacroDown);
+	}
+#endif
 
 	CDialogEx::OnTimer(nIDEvent);
 }
