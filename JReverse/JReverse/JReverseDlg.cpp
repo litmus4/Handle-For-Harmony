@@ -285,7 +285,11 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			s_pDlg->m_btnOK.SetWindowText(s_pDlg->m_bRevert ? _T("关闭") : _T("确定"));
 			s_pDlg->InputNormalChangeEx(s_pDlg->m_bRevert);
 			//s_pDlg->SetInputTrigger(s_pDlg->m_bRevert);
-			if (!s_pDlg->m_bRevert) s_pDlg->m_bMacroDown = false;
+			if (!s_pDlg->m_bRevert && s_pDlg->m_bMacroDown)
+			{
+				s_pDlg->Input(MACRO_VK, false);
+				s_pDlg->m_bMacroDown = false;
+			}
 			break;
 		case 0x5A://Z
 		case 0x58://X
