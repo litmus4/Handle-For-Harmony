@@ -628,18 +628,18 @@ void CJReverseDlg::TickSunTrigger()
 	//读条左
 	SSunBmpParam srlParam;
 	srlParam.wstrFileName = L"sunrl";
-	srlParam.ptLeftTop.x = 0;//FLAGJK
-	srlParam.ptLeftTop.y = 0;//
+	srlParam.ptLeftTop.x = 549;//550
+	srlParam.ptLeftTop.y = 161;//162
 	srlParam.lWidth = 3;
 	srlParam.lHeight = 3;
 	srlParam.iSampleX = 1;
 	srlParam.iSampleY = 1;
-	srlParam.cRedLow = 0;//
-	srlParam.cGreenLow = 0;//
-	srlParam.cBlueLow = 0;//
-	srlParam.cRedHigh = 1;//
-	srlParam.cGreenHigh = 1;//
-	srlParam.cBlueHigh = 1;//
+	srlParam.cRedLow = 110;//128
+	srlParam.cGreenLow = 170;//182
+	srlParam.cBlueLow = 160;//178
+	srlParam.cRedHigh = 146;
+	srlParam.cGreenHigh = 194;
+	srlParam.cBlueHigh = 196;
 
 	CScreenShot srl;
 	memcpy(file, GetCachePath(srlParam.wstrFileName.c_str()), 100);
@@ -654,18 +654,18 @@ void CJReverseDlg::TickSunTrigger()
 	//读条右
 	SSunBmpParam srrParam;
 	srrParam.wstrFileName = L"sunrr";
-	srrParam.ptLeftTop.x = 0;//FLAGJK
-	srrParam.ptLeftTop.y = 0;//
+	srrParam.ptLeftTop.x = 770;//771
+	srrParam.ptLeftTop.y = 168;//169
 	srrParam.lWidth = 3;
 	srrParam.lHeight = 3;
 	srrParam.iSampleX = 1;
 	srrParam.iSampleY = 1;
-	srrParam.cRedLow = 0;//
-	srrParam.cGreenLow = 0;//
-	srrParam.cBlueLow = 0;//
-	srrParam.cRedHigh = 1;//
-	srrParam.cGreenHigh = 1;//
-	srrParam.cBlueHigh = 1;//
+	srrParam.cRedLow = 30;//38
+	srrParam.cGreenLow = 40;//48
+	srrParam.cBlueLow = 41;//49
+	srrParam.cRedHigh = 46;
+	srrParam.cGreenHigh = 56;
+	srrParam.cBlueHigh = 57;
 
 	CScreenShot srr;
 	memcpy(file, GetCachePath(srrParam.wstrFileName.c_str()), 100);
@@ -683,18 +683,18 @@ void CJReverseDlg::TickSunTrigger()
 	//日
 	SSunBmpParam ssParam;
 	ssParam.wstrFileName = L"suns";
-	ssParam.ptLeftTop.x = 0;//FLAGJK
-	ssParam.ptLeftTop.y = 0;//
+	ssParam.ptLeftTop.x = 709;//710
+	ssParam.ptLeftTop.y = 173;//174
 	ssParam.lWidth = 3;
 	ssParam.lHeight = 3;
 	ssParam.iSampleX = 1;
 	ssParam.iSampleY = 1;
-	ssParam.cRedLow = 0;//
-	ssParam.cGreenLow = 0;//
-	ssParam.cBlueLow = 0;//
-	ssParam.cRedHigh = 1;//
-	ssParam.cGreenHigh = 1;//
-	ssParam.cBlueHigh = 1;//
+	ssParam.cRedLow = 190;//201
+	ssParam.cGreenLow = 190;//201
+	ssParam.cBlueLow = 190;//201
+	ssParam.cRedHigh = 212;
+	ssParam.cGreenHigh = 212;
+	ssParam.cBlueHigh = 212;
 
 	CScreenShot ss;
 	memcpy(file, GetCachePath(ssParam.wstrFileName.c_str()), 100);
@@ -709,18 +709,18 @@ void CJReverseDlg::TickSunTrigger()
 	//落日（偏右上角无字迹）
 	SSunBmpParam sssParam;
 	sssParam.wstrFileName = L"sunss";
-	sssParam.ptLeftTop.x = 0;//FLAGJK
-	sssParam.ptLeftTop.y = 0;//
+	sssParam.ptLeftTop.x = 699;//700
+	sssParam.ptLeftTop.y = 165;//166
 	sssParam.lWidth = 3;
 	sssParam.lHeight = 3;
 	sssParam.iSampleX = 1;
 	sssParam.iSampleY = 1;
-	sssParam.cRedLow = 0;//
-	sssParam.cGreenLow = 0;//
-	sssParam.cBlueLow = 0;//
-	sssParam.cRedHigh = 1;//
-	sssParam.cGreenHigh = 1;//
-	sssParam.cBlueHigh = 1;//
+	sssParam.cRedLow = 40;//55
+	sssParam.cGreenLow = 40;//55
+	sssParam.cBlueLow = 40;//55
+	sssParam.cRedHigh = 70;
+	sssParam.cGreenHigh = 70;
+	sssParam.cBlueHigh = 70;
 
 	CScreenShot sss;
 	memcpy(file, GetCachePath(sssParam.wstrFileName.c_str()), 100);
@@ -744,18 +744,18 @@ void CJReverseDlg::TickSunTrigger()
 	//旭日/烈日（偏右下角有字迹）
 	SSunBmpParam ssrParam;
 	ssrParam.wstrFileName = L"sunsr";
-	ssrParam.ptLeftTop.x = 0;//FLAGJK
-	ssrParam.ptLeftTop.y = 0;//
+	ssrParam.ptLeftTop.x = 697;//698
+	ssrParam.ptLeftTop.y = 174;//175
 	ssrParam.lWidth = 3;
 	ssrParam.lHeight = 3;
 	ssrParam.iSampleX = 1;
 	ssrParam.iSampleY = 1;
-	ssrParam.cRedLow = 0;//
-	ssrParam.cGreenLow = 0;//
-	ssrParam.cBlueLow = 0;//
-	ssrParam.cRedHigh = 1;//
-	ssrParam.cGreenHigh = 1;//
-	ssrParam.cBlueHigh = 1;//
+	ssrParam.cRedLow = 210;//228
+	ssrParam.cGreenLow = 210;//228
+	ssrParam.cBlueLow = 210;//228
+	ssrParam.cRedHigh = 246;
+	ssrParam.cGreenHigh = 246;
+	ssrParam.cBlueHigh = 246;
 
 	CScreenShot ssr;
 	memcpy(file, GetCachePath(ssrParam.wstrFileName.c_str()), 100);
