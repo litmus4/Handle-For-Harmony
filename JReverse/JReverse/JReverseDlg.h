@@ -56,6 +56,17 @@ public:
 		int iClickSwQue;
 	};
 
+	struct SSunBmpParam
+	{
+	public:
+		std::wstring wstrFileName;
+		POINT ptLeftTop;
+		LONG lWidth, lHeight;
+		int iSampleX, iSampleY;
+		BYTE cRedLow, cGreenLow, cBlueLow;
+		BYTE cRedHigh, cGreenHigh, cBlueHigh;
+	};
+
 // 构造
 public:
 	CJReverseDlg(CWnd* pParent = nullptr);	// 标准构造函数
@@ -99,6 +110,10 @@ public:
 	void Tick(SBuffTrigger& trigger);
 	void End(SBuffTrigger& trigger);
 
+	void TickSunTrigger();
+	bool IsSunBmpCorrect(const TCHAR* wszFile, const SSunBmpParam& param);
+	void ResetSunTrigger();
+
 	void InputNormalChangeEx(bool bDown);
 	void TickNormalChangeEx();
 
@@ -114,6 +129,12 @@ protected:
 	std::map<std::wstring, std::wstring> m_mapCachePaths;
 	std::vector<SBuffTrigger> m_vecBuffTriggers;
 	bool m_bInputTrigger;
+
+	int m_iSunCooldownTickNum;
+	int m_iCurSunCooldownTickNum;
+	bool m_bSunsetDown;
+	int m_iSunsetNum;
+	int m_iCurSunsetNum;
 
 	bool m_bNormalChangeClickSwitch;
 	int m_iCurNormalTickNum;

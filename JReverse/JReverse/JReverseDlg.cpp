@@ -17,8 +17,10 @@
 #endif
 
 #define CHANGE_VK VK_F6
-#define MACRO 1
+#define MACRO 0
 #define MACRO_VK 0x46
+#define SUN 1
+#define SUNSET_VK 0x43
 
 
 // CJReverseDlg 对话框
@@ -179,6 +181,11 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 
 	m_bRevert = false;
 	m_bInputTrigger = false;
+	m_iSunCooldownTickNum = 20;
+	m_iCurSunCooldownTickNum = -1;
+	m_bSunsetDown = false;
+	m_iSunsetNum = 5;
+	m_iCurSunsetNum = -1;
 	m_bNormalChangeClickSwitch = true;
 	m_iCurNormalTickNum = -1;
 	m_iNormalClickSwQue = 0;
@@ -285,6 +292,8 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			s_pDlg->m_btnOK.SetWindowText(s_pDlg->m_bRevert ? _T("关闭") : _T("确定"));
 			s_pDlg->InputNormalChangeEx(s_pDlg->m_bRevert);
 			//s_pDlg->SetInputTrigger(s_pDlg->m_bRevert);
+			if (!s_pDlg->m_bRevert)
+				s_pDlg->ResetSunTrigger();
 			if (!s_pDlg->m_bRevert && s_pDlg->m_bMacroDown)
 			{
 				s_pDlg->Input(MACRO_VK, false);
@@ -294,8 +303,8 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 		case 0x5A://Z
 		case 0x58://X
 		case 0x43://C
-			if (s_pDlg->m_bRevert)
-				s_pDlg->Input(s_pDlg->HookToInputVk(hookStruct->vkCode), true);
+			//if (s_pDlg->m_bRevert)
+			//	s_pDlg->Input(s_pDlg->HookToInputVk(hookStruct->vkCode), true);
 			break;
 		}
 	}
@@ -306,8 +315,8 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 		case 0x5A://Z
 		case 0x58://X
 		case 0x43://C
-			if (s_pDlg->m_bRevert)
-				s_pDlg->Input(s_pDlg->HookToInputVk(hookStruct->vkCode), false);
+			//if (s_pDlg->m_bRevert)
+			//	s_pDlg->Input(s_pDlg->HookToInputVk(hookStruct->vkCode), false);
 			break;
 		}
 	}
@@ -379,6 +388,7 @@ int CJReverseDlg::VkToDDCode(DWORD dwVk)
 	case 0x51: return 301;//Q
 	case VK_F6:	return 106;//F6
 	case 0x46: return 404;//F
+	case 0x43: return 503;//C
 	}
 	return -1;
 }
@@ -463,6 +473,10 @@ void CJReverseDlg::OnTimer(UINT nIDEvent)
 		}
 		Tick(*iter);
 	}
+
+#if SUN
+	TickSunTrigger();
+#endif
 
 	TickNormalChangeEx();
 
@@ -580,6 +594,227 @@ void CJReverseDlg::End(SBuffTrigger& trigger)
 		Input(trigger.dwVk, true);
 	else if (iRet < 0)
 		Input(trigger.dwVk, false);
+}
+
+void CJReverseDlg::TickSunTrigger()
+{
+	if (!m_bRevert) return;
+
+	//多次按扶摇
+	if (m_iCurSunsetNum >= 0)
+	{
+		m_bSunsetDown = !m_bSunsetDown;
+		Input(SUNSET_VK, m_bSunsetDown);
+		if (!m_bSunsetDown)
+		{
+			m_iCurSunsetNum++;
+			if (m_iCurSunsetNum >= m_iSunsetNum)
+				m_iCurSunsetNum = -1;
+		}
+	}
+
+	if (m_iCurSunCooldownTickNum >= 0)
+	{
+		m_iCurSunCooldownTickNum++;
+		if (m_iCurSunCooldownTickNum >= m_iSunCooldownTickNum)
+			m_iCurSunCooldownTickNum = -1;
+		return;
+	}
+	wchar_t file[100];
+
+	//读条
+	bool bReadingLeft = false, bReadingRight = false;
+
+	//读条左
+	SSunBmpParam srlParam;
+	srlParam.wstrFileName = L"sunrl";
+	srlParam.ptLeftTop.x = 0;//FLAGJK
+	srlParam.ptLeftTop.y = 0;//
+	srlParam.lWidth = 3;
+	srlParam.lHeight = 3;
+	srlParam.iSampleX = 1;
+	srlParam.iSampleY = 1;
+	srlParam.cRedLow = 0;//
+	srlParam.cGreenLow = 0;//
+	srlParam.cBlueLow = 0;//
+	srlParam.cRedHigh = 1;//
+	srlParam.cGreenHigh = 1;//
+	srlParam.cBlueHigh = 1;//
+
+	CScreenShot srl;
+	memcpy(file, GetCachePath(srlParam.wstrFileName.c_str()), 100);
+	if (srl.capture_and_savetobmp(srlParam.ptLeftTop,	//left top
+		srlParam.ptLeftTop.x + srlParam.lWidth, srlParam.ptLeftTop.y + srlParam.lHeight //right bottom
+		, file))
+	{
+		if (IsSunBmpCorrect(file, srlParam))
+			bReadingLeft = true;
+	}
+
+	//读条右
+	SSunBmpParam srrParam;
+	srrParam.wstrFileName = L"sunrr";
+	srrParam.ptLeftTop.x = 0;//FLAGJK
+	srrParam.ptLeftTop.y = 0;//
+	srrParam.lWidth = 3;
+	srrParam.lHeight = 3;
+	srrParam.iSampleX = 1;
+	srrParam.iSampleY = 1;
+	srrParam.cRedLow = 0;//
+	srrParam.cGreenLow = 0;//
+	srrParam.cBlueLow = 0;//
+	srrParam.cRedHigh = 1;//
+	srrParam.cGreenHigh = 1;//
+	srrParam.cBlueHigh = 1;//
+
+	CScreenShot srr;
+	memcpy(file, GetCachePath(srrParam.wstrFileName.c_str()), 100);
+	if (srr.capture_and_savetobmp(srrParam.ptLeftTop,	//left top
+		srrParam.ptLeftTop.x + srrParam.lWidth, srrParam.ptLeftTop.y + srrParam.lHeight //right bottom
+		, file))
+	{
+		if (IsSunBmpCorrect(file, srrParam))
+			bReadingRight = true;
+	}
+
+	//判断读条
+	if (!bReadingLeft || !bReadingRight) return;
+
+	//日
+	SSunBmpParam ssParam;
+	ssParam.wstrFileName = L"suns";
+	ssParam.ptLeftTop.x = 0;//FLAGJK
+	ssParam.ptLeftTop.y = 0;//
+	ssParam.lWidth = 3;
+	ssParam.lHeight = 3;
+	ssParam.iSampleX = 1;
+	ssParam.iSampleY = 1;
+	ssParam.cRedLow = 0;//
+	ssParam.cGreenLow = 0;//
+	ssParam.cBlueLow = 0;//
+	ssParam.cRedHigh = 1;//
+	ssParam.cGreenHigh = 1;//
+	ssParam.cBlueHigh = 1;//
+
+	CScreenShot ss;
+	memcpy(file, GetCachePath(ssParam.wstrFileName.c_str()), 100);
+	if (ss.capture_and_savetobmp(ssParam.ptLeftTop,	//left top
+		ssParam.ptLeftTop.x + ssParam.lWidth, ssParam.ptLeftTop.y + ssParam.lHeight //right bottom
+		, file))
+	{
+		if (!IsSunBmpCorrect(file, ssParam))
+			return;
+	}
+
+	//落日（偏右上角无字迹）
+	SSunBmpParam sssParam;
+	sssParam.wstrFileName = L"sunss";
+	sssParam.ptLeftTop.x = 0;//FLAGJK
+	sssParam.ptLeftTop.y = 0;//
+	sssParam.lWidth = 3;
+	sssParam.lHeight = 3;
+	sssParam.iSampleX = 1;
+	sssParam.iSampleY = 1;
+	sssParam.cRedLow = 0;//
+	sssParam.cGreenLow = 0;//
+	sssParam.cBlueLow = 0;//
+	sssParam.cRedHigh = 1;//
+	sssParam.cGreenHigh = 1;//
+	sssParam.cBlueHigh = 1;//
+
+	CScreenShot sss;
+	memcpy(file, GetCachePath(sssParam.wstrFileName.c_str()), 100);
+	if (sss.capture_and_savetobmp(sssParam.ptLeftTop,	//left top
+		sssParam.ptLeftTop.x + sssParam.lWidth, sssParam.ptLeftTop.y + sssParam.lHeight //right bottom
+		, file))
+	{
+		if (IsSunBmpCorrect(file, sssParam))
+		{
+			//播放声音“扶摇”
+
+			m_bSunsetDown = !m_bSunsetDown;
+			Input(SUNSET_VK, m_bSunsetDown);
+			m_iCurSunsetNum = 0;
+
+			m_iCurSunCooldownTickNum = 0;
+			return;
+		}
+	}
+
+	//旭日/烈日（偏右下角有字迹）
+	SSunBmpParam ssrParam;
+	ssrParam.wstrFileName = L"sunsr";
+	ssrParam.ptLeftTop.x = 0;//FLAGJK
+	ssrParam.ptLeftTop.y = 0;//
+	ssrParam.lWidth = 3;
+	ssrParam.lHeight = 3;
+	ssrParam.iSampleX = 1;
+	ssrParam.iSampleY = 1;
+	ssrParam.cRedLow = 0;//
+	ssrParam.cGreenLow = 0;//
+	ssrParam.cBlueLow = 0;//
+	ssrParam.cRedHigh = 1;//
+	ssrParam.cGreenHigh = 1;//
+	ssrParam.cBlueHigh = 1;//
+
+	CScreenShot ssr;
+	memcpy(file, GetCachePath(ssrParam.wstrFileName.c_str()), 100);
+	if (ssr.capture_and_savetobmp(ssrParam.ptLeftTop,	//left top
+		ssrParam.ptLeftTop.x + ssrParam.lWidth, ssrParam.ptLeftTop.y + ssrParam.lHeight //right bottom
+		, file))
+	{
+		if (IsSunBmpCorrect(file, ssrParam))
+		{
+			//播放声音“不动”
+
+			m_iCurSunCooldownTickNum = 0;
+			return;
+		}
+		else
+		{
+			//播放声音“二段跳”
+
+			m_iCurSunCooldownTickNum = 0;
+		}
+	}
+}
+
+bool CJReverseDlg::IsSunBmpCorrect(const TCHAR* wszFile, const SSunBmpParam& param)
+{
+	//if (!wszFile) return false;
+	HBITMAP hBmp = (HBITMAP)LoadImage(NULL, wszFile, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+	if (!hBmp) return false;
+
+	BITMAP bmp;
+	int iRet = GetObject(hBmp, sizeof(BITMAP), &bmp);
+	if (iRet)
+	{
+		BYTE* pBits = (BYTE*)bmp.bmBits;
+		int iFormat = bmp.bmBitsPixel / 8;
+		BYTE* pPixel = pBits + (param.lHeight - param.iSampleY - 1) * bmp.bmWidthBytes + param.iSampleX * iFormat;
+
+		int iPlus = (iFormat == 4 ? 1 : 0);
+		BYTE cRed = *(pPixel + (2 + iPlus));
+		BYTE cGreen = *(pPixel + (1 + iPlus));
+		BYTE cBlue = *(pPixel + iPlus);
+
+		return ((param.cRedLow <= cRed && cRed <= param.cRedHigh) &&
+			(param.cGreenLow <= cGreen && cGreen <= param.cGreenHigh) &&
+			(param.cBlueLow <= cBlue && cBlue <= param.cBlueHigh));
+	}
+	return false;
+}
+
+void CJReverseDlg::ResetSunTrigger()
+{
+	m_iCurSunCooldownTickNum = -1;
+
+	m_iCurSunsetNum = -1;
+	if (m_bSunsetDown)
+	{
+		Input(SUNSET_VK, false);
+		m_bSunsetDown = false;
+	}
 }
 
 void CJReverseDlg::InputNormalChangeEx(bool bDown)
