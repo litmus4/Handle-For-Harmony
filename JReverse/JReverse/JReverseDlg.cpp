@@ -181,10 +181,10 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 
 	m_bRevert = false;
 	m_bInputTrigger = false;
-	m_iSunCooldownTickNum = 20;
+	m_iSunCooldownTickNum = 40;
 	m_iCurSunCooldownTickNum = -1;
 	m_bSunsetDown = false;
-	m_iSunsetNum = 5;
+	m_iSunsetNum = 10;
 	m_iCurSunsetNum = -1;
 	m_bNormalChangeClickSwitch = true;
 	m_iCurNormalTickNum = -1;
@@ -237,7 +237,7 @@ BOOL CJReverseDlg::OnInitDialog()
 #if MACRO
 	SetTimer(0, 50, 0);
 #else
-	SetTimer(0, 200, 0);
+	SetTimer(0, 100, 0);
 #endif
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -634,11 +634,11 @@ void CJReverseDlg::TickSunTrigger()
 	srlParam.lHeight = 3;
 	srlParam.iSampleX = 1;
 	srlParam.iSampleY = 1;
-	srlParam.cRedLow = 110;//128
-	srlParam.cGreenLow = 170;//182
-	srlParam.cBlueLow = 160;//178
+	srlParam.cRedLow = 110;//128-138
+	srlParam.cGreenLow = 170;//182-201
+	srlParam.cBlueLow = 160;//178-188
 	srlParam.cRedHigh = 146;
-	srlParam.cGreenHigh = 194;
+	srlParam.cGreenHigh = 210;
 	srlParam.cBlueHigh = 196;
 
 	CScreenShot srl;
@@ -660,9 +660,9 @@ void CJReverseDlg::TickSunTrigger()
 	srrParam.lHeight = 3;
 	srrParam.iSampleX = 1;
 	srrParam.iSampleY = 1;
-	srrParam.cRedLow = 30;//38
-	srrParam.cGreenLow = 40;//48
-	srrParam.cBlueLow = 41;//49
+	srrParam.cRedLow = 0;//38-26
+	srrParam.cGreenLow = 0;//48-39
+	srrParam.cBlueLow = 0;//49-36
 	srrParam.cRedHigh = 46;
 	srrParam.cGreenHigh = 56;
 	srrParam.cBlueHigh = 57;
@@ -692,9 +692,9 @@ void CJReverseDlg::TickSunTrigger()
 	ssParam.cRedLow = 190;//201
 	ssParam.cGreenLow = 190;//201
 	ssParam.cBlueLow = 190;//201
-	ssParam.cRedHigh = 212;
-	ssParam.cGreenHigh = 212;
-	ssParam.cBlueHigh = 212;
+	ssParam.cRedHigh = 255;
+	ssParam.cGreenHigh = 255;
+	ssParam.cBlueHigh = 255;
 
 	CScreenShot ss;
 	memcpy(file, GetCachePath(ssParam.wstrFileName.c_str()), 100);
@@ -715,9 +715,9 @@ void CJReverseDlg::TickSunTrigger()
 	sssParam.lHeight = 3;
 	sssParam.iSampleX = 1;
 	sssParam.iSampleY = 1;
-	sssParam.cRedLow = 40;//55
-	sssParam.cGreenLow = 40;//55
-	sssParam.cBlueLow = 40;//55
+	sssParam.cRedLow = 0;//55
+	sssParam.cGreenLow = 0;//55
+	sssParam.cBlueLow = 0;//55
 	sssParam.cRedHigh = 70;
 	sssParam.cGreenHigh = 70;
 	sssParam.cBlueHigh = 70;
@@ -753,9 +753,9 @@ void CJReverseDlg::TickSunTrigger()
 	ssrParam.cRedLow = 210;//228
 	ssrParam.cGreenLow = 210;//228
 	ssrParam.cBlueLow = 210;//228
-	ssrParam.cRedHigh = 246;
-	ssrParam.cGreenHigh = 246;
-	ssrParam.cBlueHigh = 246;
+	ssrParam.cRedHigh = 255;
+	ssrParam.cGreenHigh = 255;
+	ssrParam.cBlueHigh = 255;
 
 	CScreenShot ssr;
 	memcpy(file, GetCachePath(ssrParam.wstrFileName.c_str()), 100);
@@ -798,6 +798,11 @@ bool CJReverseDlg::IsSunBmpCorrect(const TCHAR* wszFile, const SSunBmpParam& par
 		BYTE cGreen = *(pPixel + (1 + iPlus));
 		BYTE cBlue = *(pPixel + iPlus);
 
+#ifdef _DEBUG
+		TCHAR wszBuf[256];
+		wsprintf(wszBuf, L"$$$$$$$ %s %d %d %d\n", param.wstrFileName.c_str(), cRed, cGreen, cBlue);
+		OutputDebugString(wszBuf);
+#endif
 		return ((param.cRedLow <= cRed && cRed <= param.cRedHigh) &&
 			(param.cGreenLow <= cGreen && cGreen <= param.cGreenHigh) &&
 			(param.cBlueLow <= cBlue && cBlue <= param.cBlueHigh));
