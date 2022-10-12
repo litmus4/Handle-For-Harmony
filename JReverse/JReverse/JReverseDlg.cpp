@@ -181,7 +181,7 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 
 	m_bRevert = false;
 	m_bInputTrigger = false;
-	m_iSunCooldownTickNum = 40;
+	m_iSunCooldownTickNum = 30;
 	m_iCurSunCooldownTickNum = -1;
 	m_bSunsetDown = false;
 	m_iSunsetNum = 10;
