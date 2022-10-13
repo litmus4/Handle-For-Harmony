@@ -9,6 +9,7 @@
 #include "afxdialogex.h"
 #include "DD.h"
 #include "ScreenShot.h"
+#include "mmsystem.h"
 #include <string>
 #include <set>
 
@@ -731,6 +732,7 @@ void CJReverseDlg::TickSunTrigger()
 		if (IsSunBmpCorrect(file, sssParam))
 		{
 			//播放声音“扶摇”
+			PlaySound(L"JRSTFuYao.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 
 			m_bSunsetDown = !m_bSunsetDown;
 			Input(SUNSET_VK, m_bSunsetDown);
@@ -766,6 +768,7 @@ void CJReverseDlg::TickSunTrigger()
 		if (IsSunBmpCorrect(file, ssrParam))
 		{
 			//播放声音“不动”
+			PlaySound(L"JRSTBuDong.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 
 			m_iCurSunCooldownTickNum = 0;
 			return;
@@ -773,6 +776,7 @@ void CJReverseDlg::TickSunTrigger()
 		else
 		{
 			//播放声音“二段跳”
+			PlaySound(L"JRSTErDuanTiao.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 
 			m_iCurSunCooldownTickNum = 0;
 		}
