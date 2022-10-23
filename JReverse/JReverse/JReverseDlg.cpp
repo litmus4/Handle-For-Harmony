@@ -329,22 +329,22 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			break;
 #if FLY
 		case 0x35://5
-			if (!s_pDlg->m_bSecondMode)
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
 				s_pDlg->m_lisFlyForeQueue.push_back(0);
 			break;
 		case VK_LMENU://左Alt
-			if (!s_pDlg->m_bSecondMode)
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
 			{
 				s_pDlg->m_bLeftAlt = true;
 				s_pDlg->m_bLeftAltEx = true;
 			}
 			break;
 		case 0x51://Q
-			if (!s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAlt)
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAlt)
 				s_pDlg->Input(0x41/*A*/, true);
 			break;
 		case 0x45://E
-			if (!s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAlt)
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAlt)
 				s_pDlg->Input(0x44/*D*/, true);
 			break;
 #endif
@@ -362,17 +362,17 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 		{
 #if FLY
 		case VK_LMENU://左Alt
-			if (!s_pDlg->m_bSecondMode)
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
 				s_pDlg->m_bLeftAlt = false;
 		case 0x51://Q
-			if (!s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAltEx)
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAltEx)
 			{
 				s_pDlg->Input(0x41/*A*/, false);
 				s_pDlg->m_bLeftAltEx = false;
 			}
 			break;
 		case 0x45://E
-			if (!s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAltEx)
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAltEx)
 			{
 				s_pDlg->Input(0x44/*D*/, false);
 				s_pDlg->m_bLeftAltEx = false;
