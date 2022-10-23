@@ -6,6 +6,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <list>
 
 
 class CDD;
@@ -99,6 +100,7 @@ public:
 	int VkToDDCode(DWORD dwVk);
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
+	afx_msg void OnBnClickedSecondMode();
 
 	void InitBuffTriggers();
 	afx_msg void OnTimer(UINT nIDEvent);
@@ -114,6 +116,8 @@ public:
 	bool IsSunBmpCorrect(const TCHAR* wszFile, const SSunBmpParam& param);
 	void ResetSunTrigger();
 
+	void TickFlyHelper();
+
 	void InputNormalChangeEx(bool bDown);
 	void TickNormalChangeEx();
 
@@ -125,6 +129,7 @@ protected:
 
 	bool m_bRevert;
 	CDD* m_pdd;
+	bool m_bSecondMode;
 
 	std::map<std::wstring, std::wstring> m_mapCachePaths;
 	std::vector<SBuffTrigger> m_vecBuffTriggers;
@@ -135,6 +140,11 @@ protected:
 	bool m_bSunsetDown;
 	int m_iSunsetNum;
 	int m_iCurSunsetNum;
+
+	std::list<int> m_lisFlyForeQueue;
+	int m_iFlyDelayTickNum;
+	bool m_bLeftAlt;
+	bool m_bLeftAltEx;
 
 	bool m_bNormalChangeClickSwitch;
 	int m_iCurNormalTickNum;

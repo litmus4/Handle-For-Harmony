@@ -22,6 +22,8 @@
 #define MACRO_VK 0x46
 #define SUN 1
 #define SUNSET_VK 0x43
+#define FLY 1
+#define FLYF2L_VK 0x39
 
 
 // CJReverseDlg 对话框
@@ -181,12 +183,20 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
 	m_bRevert = false;
+	m_bSecondMode = false;
+
 	m_bInputTrigger = false;
+
 	m_iSunCooldownTickNum = 30;
 	m_iCurSunCooldownTickNum = -1;
 	m_bSunsetDown = false;
 	m_iSunsetNum = 10;
 	m_iCurSunsetNum = -1;
+
+	m_iFlyDelayTickNum = 2;
+	m_bLeftAlt = false;
+	m_bLeftAltEx = false;
+
 	m_bNormalChangeClickSwitch = true;
 	m_iCurNormalTickNum = -1;
 	m_iNormalClickSwQue = 0;
@@ -204,6 +214,7 @@ BEGIN_MESSAGE_MAP(CJReverseDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDCANCEL, &CJReverseDlg::OnBnClickedCancel)
 	ON_BN_CLICKED(IDOK, &CJReverseDlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDC_CHECK, &CJReverseDlg::OnBnClickedSecondMode)
 	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
@@ -218,6 +229,21 @@ BOOL CJReverseDlg::OnInitDialog()
 	//  执行此操作
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
+
+	RECT rcOK;
+	m_btnOK.GetWindowRect(&rcOK);
+	rcOK.left -=7;
+	rcOK.right -= 7;
+	rcOK.top -= 30;
+	rcOK.bottom = rcOK.top + 25;
+	m_btnOK.MoveWindow(&rcOK);
+	RECT rcCancel;
+	GetDlgItem(IDCANCEL)->GetWindowRect(&rcCancel);
+	rcCancel.left -= 7;
+	rcCancel.right -= 7;
+	rcCancel.top -= 30;
+	rcCancel.bottom = rcCancel.top + 25;
+	GetDlgItem(IDCANCEL)->MoveWindow(&rcCancel);
 
 	::SetWindowPos(GetSafeHwnd(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE);
 	s_hKbHook = SetWindowsHookEx(WH_KEYBOARD_LL, &CJReverseDlg::KeyboardProc, NULL, NULL);
@@ -301,6 +327,27 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 				s_pDlg->m_bMacroDown = false;
 			}
 			break;
+#if FLY
+		case 0x35://5
+			if (!s_pDlg->m_bSecondMode)
+				s_pDlg->m_lisFlyForeQueue.push_back(0);
+			break;
+		case VK_LMENU://左Alt
+			if (!s_pDlg->m_bSecondMode)
+			{
+				s_pDlg->m_bLeftAlt = true;
+				s_pDlg->m_bLeftAltEx = true;
+			}
+			break;
+		case 0x51://Q
+			if (!s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAlt)
+				s_pDlg->Input(0x41/*A*/, true);
+			break;
+		case 0x45://E
+			if (!s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAlt)
+				s_pDlg->Input(0x44/*D*/, true);
+			break;
+#endif
 		case 0x5A://Z
 		case 0x58://X
 		case 0x43://C
@@ -313,6 +360,25 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 	{
 		switch (hookStruct->vkCode)
 		{
+#if FLY
+		case VK_LMENU://左Alt
+			if (!s_pDlg->m_bSecondMode)
+				s_pDlg->m_bLeftAlt = false;
+		case 0x51://Q
+			if (!s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAltEx)
+			{
+				s_pDlg->Input(0x41/*A*/, false);
+				s_pDlg->m_bLeftAltEx = false;
+			}
+			break;
+		case 0x45://E
+			if (!s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAltEx)
+			{
+				s_pDlg->Input(0x44/*D*/, false);
+				s_pDlg->m_bLeftAltEx = false;
+			}
+			break;
+#endif
 		case 0x5A://Z
 		case 0x58://X
 		case 0x43://C
@@ -390,6 +456,9 @@ int CJReverseDlg::VkToDDCode(DWORD dwVk)
 	case VK_F6:	return 106;//F6
 	case 0x46: return 404;//F
 	case 0x43: return 503;//C
+	case 0x41: return 401;//A
+	case 0x44: return 403;//D
+	case 0x39: return 209;//9
 	}
 	return -1;
 }
@@ -408,6 +477,12 @@ void CJReverseDlg::OnBnClickedCancel()
 		UnhookWindowsHookEx(s_hMHook);
 	delete m_pdd;
 	CDialogEx::OnCancel();
+}
+
+void CJReverseDlg::OnBnClickedSecondMode()
+{
+	int iChecked = ((CButton*)GetDlgItem(IDC_CHECK))->GetCheck();
+	m_bSecondMode = (iChecked == 1);
 }
 
 void CJReverseDlg::InitBuffTriggers()
@@ -475,9 +550,17 @@ void CJReverseDlg::OnTimer(UINT nIDEvent)
 		Tick(*iter);
 	}
 
+	if (m_bRevert)
+	{
 #if SUN
-	TickSunTrigger();
+		if (m_bSecondMode)
+			TickSunTrigger();
 #endif
+#if FLY
+		else
+			TickFlyHelper();
+#endif
+	}
 
 	TickNormalChangeEx();
 
@@ -599,8 +682,6 @@ void CJReverseDlg::End(SBuffTrigger& trigger)
 
 void CJReverseDlg::TickSunTrigger()
 {
-	if (!m_bRevert) return;
-
 	//多次按扶摇
 	if (m_iCurSunsetNum >= 0)
 	{
@@ -823,6 +904,24 @@ void CJReverseDlg::ResetSunTrigger()
 	{
 		Input(SUNSET_VK, false);
 		m_bSunsetDown = false;
+	}
+}
+
+void CJReverseDlg::TickFlyHelper()
+{
+	std::list<int>::iterator iter = m_lisFlyForeQueue.begin();
+	while (iter != m_lisFlyForeQueue.end())
+	{
+		(*iter)++;
+		if ((*iter) >= m_iFlyDelayTickNum + 1)
+		{
+			Input(FLYF2L_VK, false);
+			iter = m_lisFlyForeQueue.erase(iter);
+			continue;
+		}
+		else if((*iter) >= m_iFlyDelayTickNum)
+			Input(FLYF2L_VK, true);
+		iter++;
 	}
 }
 
