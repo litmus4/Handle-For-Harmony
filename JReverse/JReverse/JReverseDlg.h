@@ -145,6 +145,7 @@ protected:
 	int m_iFlyDelayTickNum;
 	bool m_bLeftAlt;
 	bool m_bLeftAltEx;
+	bool m_bLeftCtrl;
 
 	bool m_bNormalChangeClickSwitch;
 	int m_iCurNormalTickNum;

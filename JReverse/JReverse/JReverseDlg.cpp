@@ -196,6 +196,7 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 	m_iFlyDelayTickNum = 2;
 	m_bLeftAlt = false;
 	m_bLeftAltEx = false;
+	m_bLeftCtrl = false;
 
 	m_bNormalChangeClickSwitch = true;
 	m_iCurNormalTickNum = -1;
@@ -329,7 +330,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			break;
 #if FLY
 		case 0x35://5
-			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && !s_pDlg->m_bLeftCtrl)
 				s_pDlg->m_lisFlyForeQueue.push_back(0);
 			break;
 		case VK_LMENU://左Alt
@@ -346,6 +347,10 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 		case 0x45://E
 			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAlt)
 				s_pDlg->Input(0x44/*D*/, true);
+			break;
+		case VK_LCONTROL://左Ctrl
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
+				s_pDlg->m_bLeftCtrl = true;
 			break;
 #endif
 		case 0x5A://Z
@@ -364,6 +369,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 		case VK_LMENU://左Alt
 			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
 				s_pDlg->m_bLeftAlt = false;
+			break;
 		case 0x51://Q
 			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAltEx)
 			{
@@ -377,6 +383,10 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 				s_pDlg->Input(0x44/*D*/, false);
 				s_pDlg->m_bLeftAltEx = false;
 			}
+			break;
+		case VK_LCONTROL://左Ctrl
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
+				s_pDlg->m_bLeftCtrl = false;
 			break;
 #endif
 		case 0x5A://Z
