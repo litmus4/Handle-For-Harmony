@@ -197,6 +197,7 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 	m_bLeftAlt = false;
 	m_bLeftAltEx = false;
 	m_bLeftCtrl = false;
+	m_bVehicleFly = false;
 
 	m_bNormalChangeClickSwitch = true;
 	m_iCurNormalTickNum = -1;
@@ -321,7 +322,11 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			s_pDlg->InputNormalChangeEx(s_pDlg->m_bRevert);
 			//s_pDlg->SetInputTrigger(s_pDlg->m_bRevert);
 			if (!s_pDlg->m_bRevert)
+			{
 				s_pDlg->ResetSunTrigger();
+				s_pDlg->m_bVehicleFly = false;
+				((CStatic*)s_pDlg->GetDlgItem(IDC_STATIC))->SetWindowText(_T(""));
+			}
 			if (!s_pDlg->m_bRevert && s_pDlg->m_bMacroDown)
 			{
 				s_pDlg->Input(MACRO_VK, false);
@@ -341,12 +346,30 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		case 0x51://Q
-			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAlt)
-				s_pDlg->Input(0x41/*A*/, true);
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
+			{
+				if (s_pDlg->m_bLeftAlt)
+					s_pDlg->Input(0x41/*A*/, true);
+				if (s_pDlg->m_bVehicleFly)
+					s_pDlg->Input(0x31/*1*/, true);
+			}
+			break;
+		case 0x57://W
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bVehicleFly)
+				s_pDlg->Input(0x32/*2*/, true);
+			break;
+		case 0x53://S
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bVehicleFly)
+				s_pDlg->Input(0x33/*3*/, true);
 			break;
 		case 0x45://E
-			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAlt)
-				s_pDlg->Input(0x44/*D*/, true);
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
+			{
+				if (s_pDlg->m_bLeftAlt)
+					s_pDlg->Input(0x44/*D*/, true);
+				if (s_pDlg->m_bVehicleFly)
+					s_pDlg->Input(0x34/*4*/, true);
+			}
 			break;
 		case VK_LCONTROL://左Ctrl
 			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
@@ -354,6 +377,12 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			break;
 #endif
 		case 0x5A://Z
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
+			{
+				s_pDlg->m_bVehicleFly = !s_pDlg->m_bVehicleFly;
+				((CStatic*)s_pDlg->GetDlgItem(IDC_STATIC))->SetWindowText(s_pDlg->m_bVehicleFly ? _T("V") : _T(""));
+			}
+			break;
 		case 0x58://X
 		case 0x43://C
 			//if (s_pDlg->m_bRevert)
@@ -371,17 +400,35 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 				s_pDlg->m_bLeftAlt = false;
 			break;
 		case 0x51://Q
-			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAltEx)
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
 			{
-				s_pDlg->Input(0x41/*A*/, false);
-				s_pDlg->m_bLeftAltEx = false;
+				if (s_pDlg->m_bLeftAltEx)
+				{
+					s_pDlg->Input(0x41/*A*/, false);
+					s_pDlg->m_bLeftAltEx = false;
+				}
+				if (s_pDlg->m_bVehicleFly)
+					s_pDlg->Input(0x31/*1*/, false);
 			}
 			break;
+		case 0x57://W
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bVehicleFly)
+				s_pDlg->Input(0x32/*2*/, false);
+			break;
+		case 0x53://S
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bVehicleFly)
+				s_pDlg->Input(0x33/*3*/, false);
+			break;
 		case 0x45://E
-			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bLeftAltEx)
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
 			{
-				s_pDlg->Input(0x44/*D*/, false);
-				s_pDlg->m_bLeftAltEx = false;
+				if (s_pDlg->m_bLeftAltEx)
+				{
+					s_pDlg->Input(0x44/*D*/, false);
+					s_pDlg->m_bLeftAltEx = false;
+				}
+				if (s_pDlg->m_bVehicleFly)
+					s_pDlg->Input(0x34/*4*/, false);
 			}
 			break;
 		case VK_LCONTROL://左Ctrl
@@ -458,6 +505,9 @@ int CJReverseDlg::VkToDDCode(DWORD dwVk)
 	case 0x56: return 504;//V
 	case VK_SHIFT: return 500;//Shift
 	case 0x31: return 201;//1
+	case 0x32: return 202;//2
+	case 0x33: return 203;//3
+	case 0x34: return 204;//4
 	case VK_DIVIDE: return 811;///
 	case 0x35: return 205;//5
 	case 0x45: return 303;//E
@@ -477,6 +527,17 @@ void CJReverseDlg::OnBnClickedOk()
 {
 	m_bRevert = !m_bRevert;
 	m_btnOK.SetWindowText(m_bRevert ? _T("关闭") : _T("确定"));
+	if (!m_bRevert)
+	{
+		ResetSunTrigger();
+		m_bVehicleFly = false;
+		((CStatic*)GetDlgItem(IDC_STATIC))->SetWindowText(_T(""));
+	}
+	if (!m_bRevert && m_bMacroDown)
+	{
+		Input(MACRO_VK, false);
+		m_bMacroDown = false;
+	}
 }
 
 void CJReverseDlg::OnBnClickedCancel()
@@ -493,6 +554,11 @@ void CJReverseDlg::OnBnClickedSecondMode()
 {
 	int iChecked = ((CButton*)GetDlgItem(IDC_CHECK))->GetCheck();
 	m_bSecondMode = (iChecked == 1);
+	if (m_bSecondMode)
+	{
+		m_bVehicleFly = false;
+		((CStatic*)GetDlgItem(IDC_STATIC))->SetWindowText(_T(""));
+	}
 }
 
 void CJReverseDlg::InitBuffTriggers()

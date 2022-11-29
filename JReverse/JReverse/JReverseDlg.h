@@ -146,6 +146,7 @@ protected:
 	bool m_bLeftAlt;
 	bool m_bLeftAltEx;
 	bool m_bLeftCtrl;
+	bool m_bVehicleFly;
 
 	bool m_bNormalChangeClickSwitch;
 	int m_iCurNormalTickNum;
