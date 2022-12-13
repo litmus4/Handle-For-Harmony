@@ -198,6 +198,7 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 	m_bLeftAltEx = false;
 	m_bLeftCtrl = false;
 	m_bVehicleFly = false;
+	m_iVehicleMove = 0;
 
 	m_bNormalChangeClickSwitch = true;
 	m_iCurNormalTickNum = -1;
@@ -325,6 +326,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			{
 				s_pDlg->ResetSunTrigger();
 				s_pDlg->m_bVehicleFly = false;
+				s_pDlg->m_iVehicleMove = 0;
 				((CStatic*)s_pDlg->GetDlgItem(IDC_STATIC))->SetWindowText(_T(""));
 			}
 			if (!s_pDlg->m_bRevert && s_pDlg->m_bMacroDown)
@@ -380,6 +382,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
 			{
 				s_pDlg->m_bVehicleFly = !s_pDlg->m_bVehicleFly;
+				if (!s_pDlg->m_bVehicleFly) s_pDlg->m_iVehicleMove = 0;
 				((CStatic*)s_pDlg->GetDlgItem(IDC_STATIC))->SetWindowText(s_pDlg->m_bVehicleFly ? _T("V") : _T(""));
 			}
 			break;
@@ -487,6 +490,19 @@ void CJReverseDlg::Input(DWORD dwVk, bool bDown)
 	m_pdd->DD_key(VkToDDCode(dwVk), bDown ? 1 : 2);
 }
 
+void CJReverseDlg::Move(EMouseMove eMove, int iPixel)
+{
+	int iX = 0, iY = 0;
+	switch (eMove)
+	{
+	case EMouseMove::Left: iX = -iPixel; break;
+	case EMouseMove::Top: iY = -iPixel; break;
+	case EMouseMove::Right: iX = iPixel; break;
+	case EMouseMove::Bottom: iY = iPixel; break;
+	}
+	m_pdd->DD_movR(iX, iY);
+}
+
 DWORD CJReverseDlg::HookToInputVk(DWORD dwVk)
 {
 	switch (dwVk)
@@ -531,6 +547,7 @@ void CJReverseDlg::OnBnClickedOk()
 	{
 		ResetSunTrigger();
 		m_bVehicleFly = false;
+		m_iVehicleMove = 0;
 		((CStatic*)GetDlgItem(IDC_STATIC))->SetWindowText(_T(""));
 	}
 	if (!m_bRevert && m_bMacroDown)
@@ -557,6 +574,7 @@ void CJReverseDlg::OnBnClickedSecondMode()
 	if (m_bSecondMode)
 	{
 		m_bVehicleFly = false;
+		m_iVehicleMove = 0;
 		((CStatic*)GetDlgItem(IDC_STATIC))->SetWindowText(_T(""));
 	}
 }
@@ -998,6 +1016,17 @@ void CJReverseDlg::TickFlyHelper()
 		else if((*iter) >= m_iFlyDelayTickNum)
 			Input(FLYF2L_VK, true);
 		iter++;
+	}
+
+	if (m_bVehicleFly)
+	{
+		m_iVehicleMove++;
+		if (m_iVehicleMove == 1)
+			Move(EMouseMove::Left, 2);
+		else if ((m_iVehicleMove - 1) % 2 == 0)
+			Move(EMouseMove::Left, 4);
+		else if ((m_iVehicleMove - 1) % 2 == 1)
+			Move(EMouseMove::Right, 4);
 	}
 }
 

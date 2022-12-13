@@ -14,6 +14,14 @@ class CDD;
 class CJReverseDlg : public CDialogEx
 {
 public:
+	enum EMouseMove
+	{
+		Left,
+		Top,
+		Right,
+		Bottom
+	};
+
 	enum EBuffTriggerType
 	{
 		FrequentClick,
@@ -96,6 +104,7 @@ protected:
 
 public:
 	void Input(DWORD dwVk, bool bDown);
+	void Move(EMouseMove eMove, int iPixel);
 	DWORD HookToInputVk(DWORD dwVk);
 	int VkToDDCode(DWORD dwVk);
 	afx_msg void OnBnClickedOk();
@@ -147,6 +156,7 @@ protected:
 	bool m_bLeftAltEx;
 	bool m_bLeftCtrl;
 	bool m_bVehicleFly;
+	int m_iVehicleMove;
 
 	bool m_bNormalChangeClickSwitch;
 	int m_iCurNormalTickNum;
