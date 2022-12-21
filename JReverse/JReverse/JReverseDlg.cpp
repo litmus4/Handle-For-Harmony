@@ -1022,11 +1022,11 @@ void CJReverseDlg::TickFlyHelper()
 	{
 		m_iVehicleMove++;
 		if (m_iVehicleMove == 1)
-			Move(EMouseMove::Left, 2);
+			Move(EMouseMove::Left, 1);
 		else if ((m_iVehicleMove - 1) % 2 == 0)
-			Move(EMouseMove::Left, 4);
+			Move(EMouseMove::Left, 1);
 		else if ((m_iVehicleMove - 1) % 2 == 1)
-			Move(EMouseMove::Right, 4);
+			Move(EMouseMove::Right, 1);
 	}
 }
 
