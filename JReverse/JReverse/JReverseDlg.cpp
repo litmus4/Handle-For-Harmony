@@ -320,7 +320,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 		case 0x56://V
 			s_pDlg->m_bRevert = !s_pDlg->m_bRevert;
 			s_pDlg->m_btnOK.SetWindowText(s_pDlg->m_bRevert ? _T("关闭") : _T("确定"));
-			s_pDlg->InputNormalChangeEx(s_pDlg->m_bRevert);
+			//s_pDlg->InputNormalChangeEx(s_pDlg->m_bRevert);
 			//s_pDlg->SetInputTrigger(s_pDlg->m_bRevert);
 			if (!s_pDlg->m_bRevert)
 			{
@@ -391,6 +391,9 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			//if (s_pDlg->m_bRevert)
 			//	s_pDlg->Input(s_pDlg->HookToInputVk(hookStruct->vkCode), true);
 			break;
+		case VK_OEM_3://`
+			s_pDlg->Input(VK_OEM_2, true);
+			break;
 		}
 	}
 	else if (iMsg == WM_KEYUP || iMsg == WM_SYSKEYUP)
@@ -445,6 +448,9 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			//if (s_pDlg->m_bRevert)
 			//	s_pDlg->Input(s_pDlg->HookToInputVk(hookStruct->vkCode), false);
 			break;
+		case VK_OEM_3://`
+			s_pDlg->Input(VK_OEM_2, false);
+			break;
 		}
 	}
 
@@ -464,12 +470,12 @@ LRESULT CJReverseDlg::MouseProc(int iCode, WPARAM wParam, LPARAM lParam)
 
 	if (iMsg == WM_RBUTTONDOWN)
 	{
-		s_pDlg->InputNormalChangeEx(true);
+		//s_pDlg->InputNormalChangeEx(true);
 		//s_pDlg->SetInputTrigger(true);
 	}
 	else if (iMsg == WM_RBUTTONUP)
 	{
-		s_pDlg->InputNormalChangeEx(false);
+		//s_pDlg->InputNormalChangeEx(false);
 		//s_pDlg->SetInputTrigger(false);
 	}
 
@@ -524,7 +530,7 @@ int CJReverseDlg::VkToDDCode(DWORD dwVk)
 	case 0x32: return 202;//2
 	case 0x33: return 203;//3
 	case 0x34: return 204;//4
-	case VK_DIVIDE: return 811;///
+	case VK_DIVIDE: return 811;///(s)
 	case 0x35: return 205;//5
 	case 0x45: return 303;//E
 	case 0x57: return 302;//W
@@ -535,6 +541,7 @@ int CJReverseDlg::VkToDDCode(DWORD dwVk)
 	case 0x41: return 401;//A
 	case 0x44: return 403;//D
 	case 0x39: return 209;//9
+	case VK_OEM_2: return 510;///(b)
 	}
 	return -1;
 }
