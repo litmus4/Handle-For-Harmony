@@ -358,7 +358,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			break;
 		case 0x57://W
 			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bVehicleFly)
-				s_pDlg->Input(0x32/*2*/, true);
+				s_pDlg->Input(0x33/*3*/, true);
 			break;
 		case 0x53://S
 			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bVehicleFly)
@@ -370,7 +370,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 				if (s_pDlg->m_bLeftAlt)
 					s_pDlg->Input(0x44/*D*/, true);
 				if (s_pDlg->m_bVehicleFly)
-					s_pDlg->Input(0x34/*4*/, true);
+					s_pDlg->Input(0x32/*2*/, true);
 			}
 			break;
 		case VK_LCONTROL://左Ctrl
@@ -419,7 +419,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			break;
 		case 0x57://W
 			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bVehicleFly)
-				s_pDlg->Input(0x32/*2*/, false);
+				s_pDlg->Input(0x33/*3*/, false);
 			break;
 		case 0x53://S
 			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bVehicleFly)
@@ -434,7 +434,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 					s_pDlg->m_bLeftAltEx = false;
 				}
 				if (s_pDlg->m_bVehicleFly)
-					s_pDlg->Input(0x34/*4*/, false);
+					s_pDlg->Input(0x32/*2*/, false);
 			}
 			break;
 		case VK_LCONTROL://左Ctrl
@@ -1025,16 +1025,16 @@ void CJReverseDlg::TickFlyHelper()
 		iter++;
 	}
 
-	if (m_bVehicleFly)
-	{
-		m_iVehicleMove++;
-		if (m_iVehicleMove == 1)
-			Move(EMouseMove::Left, 1);
-		else if ((m_iVehicleMove - 1) % 2 == 0)
-			Move(EMouseMove::Left, 1);
-		else if ((m_iVehicleMove - 1) % 2 == 1)
-			Move(EMouseMove::Right, 1);
-	}
+	//if (m_bVehicleFly)
+	//{
+	//	m_iVehicleMove++;
+	//	if (m_iVehicleMove == 1)
+	//		Move(EMouseMove::Left, 1);
+	//	else if ((m_iVehicleMove - 1) % 2 == 0)
+	//		Move(EMouseMove::Left, 1);
+	//	else if ((m_iVehicleMove - 1) % 2 == 1)
+	//		Move(EMouseMove::Right, 1);
+	//}
 }
 
 void CJReverseDlg::InputNormalChangeEx(bool bDown)
