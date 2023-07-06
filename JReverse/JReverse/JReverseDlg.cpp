@@ -391,6 +391,18 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			//if (s_pDlg->m_bRevert)
 			//	s_pDlg->Input(s_pDlg->HookToInputVk(hookStruct->vkCode), true);
 			break;
+		case VK_F1://F1
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bVehicleFly)
+				s_pDlg->Input(0x31/*1*/, true);
+			break;
+		case VK_F2://F2
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bVehicleFly)
+				s_pDlg->Input(0x33/*3*/, true);
+			break;
+		case VK_F3://F3
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bVehicleFly)
+				s_pDlg->Input(0x32/*2*/, true);
+			break;
 		case VK_OEM_3://`
 			s_pDlg->Input(VK_OEM_2, true);
 			break;
@@ -447,6 +459,18 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 		case 0x43://C
 			//if (s_pDlg->m_bRevert)
 			//	s_pDlg->Input(s_pDlg->HookToInputVk(hookStruct->vkCode), false);
+			break;
+		case VK_F1://F1
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bVehicleFly)
+				s_pDlg->Input(0x31/*1*/, false);
+			break;
+		case VK_F2://F2
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bVehicleFly)
+				s_pDlg->Input(0x33/*3*/, false);
+			break;
+		case VK_F3://F3
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && s_pDlg->m_bVehicleFly)
+				s_pDlg->Input(0x32/*2*/, false);
 			break;
 		case VK_OEM_3://`
 			s_pDlg->Input(VK_OEM_2, false);
