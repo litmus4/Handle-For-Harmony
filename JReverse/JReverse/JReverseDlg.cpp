@@ -26,6 +26,15 @@
 #define FLYF2L_VK 0x39
 
 
+CJReverseDlg::ETimerType g_eHuitouTypeSeqs[] = {
+	CJReverseDlg::ETimerType::HuitouFirst,
+	CJReverseDlg::ETimerType::HuitouIn,
+	CJReverseDlg::ETimerType::HuitouOut3Of4,
+	CJReverseDlg::ETimerType::HuitouIn,
+	CJReverseDlg::ETimerType::HuitouOut2Of3,
+	CJReverseDlg::ETimerType::HuitouIn
+};
+
 // CJReverseDlg 对话框
 
 void CJReverseDlg::SBuffTrigger::CheckBuff(bool bCorrect)
@@ -200,6 +209,13 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 	m_bVehicleFly = false;
 	m_iVehicleMove = 0;
 
+	m_uHuitouReadyTimer = 0;
+	m_uHuitouFirstTimer = 0;
+	m_uHuitouInTimer = 0;
+	m_uHuitouOut3Of4Timer = 0;
+	m_uHuitouOut2Of3Timer = 0;
+	m_iHuitouStep = 0;
+
 	m_bNormalChangeClickSwitch = true;
 	m_iCurNormalTickNum = -1;
 	m_iNormalClickSwQue = 0;
@@ -327,6 +343,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 				s_pDlg->ResetSunTrigger();
 				s_pDlg->m_bVehicleFly = false;
 				s_pDlg->m_iVehicleMove = 0;
+				s_pDlg->ResetTimers();
 				((CStatic*)s_pDlg->GetDlgItem(IDC_STATIC))->SetWindowText(_T(""));
 			}
 			if (!s_pDlg->m_bRevert && s_pDlg->m_bMacroDown)
@@ -398,11 +415,20 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
 			{
 				s_pDlg->m_bVehicleFly = !s_pDlg->m_bVehicleFly;
-				if (!s_pDlg->m_bVehicleFly) s_pDlg->m_iVehicleMove = 0;
+				if (!s_pDlg->m_bVehicleFly)
+					s_pDlg->m_iVehicleMove = 0;
+				else
+					s_pDlg->ResetTimers();
 				((CStatic*)s_pDlg->GetDlgItem(IDC_STATIC))->SetWindowText(s_pDlg->m_bVehicleFly ? _T("V") : _T(""));
 			}
 			break;
 		case 0x58://X
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode && !s_pDlg->m_bVehicleFly)
+			{
+				s_pDlg->m_uHuitouReadyTimer = timeSetEvent(9000, 1, callBackTimer, ETimerType::HuitouReady, TIME_ONESHOT);
+				PlaySound(L"JRSTBuDong.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+			}
+			break;
 		case 0x43://C
 			//if (s_pDlg->m_bRevert)
 			//	s_pDlg->Input(s_pDlg->HookToInputVk(hookStruct->vkCode), true);
@@ -588,6 +614,7 @@ void CJReverseDlg::OnBnClickedOk()
 		ResetSunTrigger();
 		m_bVehicleFly = false;
 		m_iVehicleMove = 0;
+		ResetTimers();
 		((CStatic*)GetDlgItem(IDC_STATIC))->SetWindowText(_T(""));
 	}
 	if (!m_bRevert && m_bMacroDown)
@@ -615,6 +642,7 @@ void CJReverseDlg::OnBnClickedSecondMode()
 	{
 		m_bVehicleFly = false;
 		m_iVehicleMove = 0;
+		ResetTimers();
 		((CStatic*)GetDlgItem(IDC_STATIC))->SetWindowText(_T(""));
 	}
 }
@@ -1070,6 +1098,59 @@ void CJReverseDlg::TickFlyHelper()
 	//}
 }
 
+void CJReverseDlg::StartHuitouTimer(ETimerType eTimerType)
+{
+	switch (eTimerType)
+	{
+	case ETimerType::HuitouFirst:
+		m_uHuitouFirstTimer = timeSetEvent(8000, 1, callBackTimer, eTimerType, TIME_ONESHOT);
+		break;
+	case ETimerType::HuitouIn:
+		m_uHuitouInTimer = timeSetEvent(4000, 1, callBackTimer, eTimerType, TIME_ONESHOT);
+		PlaySound(L"JRSTFuYao.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+		break;
+	case ETimerType::HuitouOut3Of4:
+		m_uHuitouOut3Of4Timer = timeSetEvent(3000, 1, callBackTimer, eTimerType, TIME_ONESHOT);
+		PlaySound(L"JRHTDuan.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+		break;
+	case ETimerType::HuitouOut2Of3:
+		m_uHuitouOut2Of3Timer = timeSetEvent(2000, 1, callBackTimer, eTimerType, TIME_ONESHOT);
+		PlaySound(L"JRHTDuan.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+		break;
+	}
+}
+
+void CJReverseDlg::ResetTimers()
+{
+	timeKillEvent(m_uHuitouReadyTimer);
+	m_uHuitouReadyTimer = 0;
+	timeKillEvent(m_uHuitouFirstTimer);
+	m_uHuitouFirstTimer = 0;
+	timeKillEvent(m_uHuitouInTimer);
+	m_uHuitouInTimer = 0;
+	timeKillEvent(m_uHuitouOut3Of4Timer);
+	m_uHuitouOut3Of4Timer = 0;
+	timeKillEvent(m_uHuitouOut2Of3Timer);
+	m_uHuitouOut2Of3Timer = 0;
+
+	m_iHuitouStep = 0;
+}
+
+void CJReverseDlg::RunHuitouTimer()
+{
+	int iNum = sizeof(g_eHuitouTypeSeqs) / sizeof(ETimerType);
+	if (s_pDlg->m_iHuitouStep < iNum)
+	{
+		s_pDlg->StartHuitouTimer(g_eHuitouTypeSeqs[s_pDlg->m_iHuitouStep]);
+		s_pDlg->m_iHuitouStep++;
+	}
+	else
+	{
+		PlaySound(L"JRHTDuan.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+		s_pDlg->ResetTimers();
+	}
+}
+
 void CJReverseDlg::InputNormalChangeEx(bool bDown)
 {
 	if (m_bNormalChangeClickSwitch)
@@ -1108,5 +1189,21 @@ void CJReverseDlg::TickNormalChangeEx()
 			m_iCurNormalTickNum = 0;
 			Input(CHANGE_VK, true);
 		}
+	}
+}
+
+void CALLBACK callBackTimer(UINT wTimerID, UINT msg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
+{
+	switch ((CJReverseDlg::ETimerType)dwUser)
+	{
+	case CJReverseDlg::ETimerType::HuitouReady:
+	case CJReverseDlg::ETimerType::HuitouFirst:
+	case CJReverseDlg::ETimerType::HuitouIn:
+	case CJReverseDlg::ETimerType::HuitouOut3Of4:
+	case CJReverseDlg::ETimerType::HuitouOut2Of3:
+	{
+		CJReverseDlg::RunHuitouTimer();
+		break;
+	}
 	}
 }

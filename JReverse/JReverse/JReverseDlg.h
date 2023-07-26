@@ -29,6 +29,15 @@ public:
 		DownUpSwitch,
 	};
 
+	enum ETimerType
+	{
+		HuitouReady,
+		HuitouFirst,
+		HuitouIn,
+		HuitouOut3Of4,
+		HuitouOut2Of3,
+	};
+
 	struct SBuffTrigger
 	{
 	public:
@@ -126,6 +135,9 @@ public:
 	void ResetSunTrigger();
 
 	void TickFlyHelper();
+	void StartHuitouTimer(ETimerType eTimerType);
+	void ResetTimers();
+	static void RunHuitouTimer();
 
 	void InputNormalChangeEx(bool bDown);
 	void TickNormalChangeEx();
@@ -158,8 +170,17 @@ protected:
 	bool m_bVehicleFly;
 	int m_iVehicleMove;
 
+	UINT m_uHuitouReadyTimer;
+	UINT m_uHuitouFirstTimer;
+	UINT m_uHuitouInTimer;
+	UINT m_uHuitouOut3Of4Timer;
+	UINT m_uHuitouOut2Of3Timer;
+	int m_iHuitouStep;
+
 	bool m_bNormalChangeClickSwitch;
 	int m_iCurNormalTickNum;
 	int m_iNormalClickSwQue;
 	bool m_bMacroDown;
 };
+
+void CALLBACK callBackTimer(UINT wTimerID, UINT msg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
