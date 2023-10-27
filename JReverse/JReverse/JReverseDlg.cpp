@@ -270,14 +270,17 @@ BOOL CJReverseDlg::OnInitDialog()
 	s_pDlg = this;
 
 	m_pdd = new CDD();
-	std::string strPath = "D:\\likehole\\jk\\Handle-For-Harmony\\JReverse\\";
+	std::string strFolder = "D:\\likehole\\jk\\Handle-For-Harmony\\JReverse\\";
 #ifdef _DEBUG
-	strPath += "Debug\\";
+	strFolder += "Debug\\";
 #else
-	strPath += "Release\\";
+	strFolder += "Release\\";
 #endif
-	strPath += "DD94687.32.dll";
+	std::string strPath = strFolder + "dd32695.x32.dll";
 	m_pdd->GetFunAddr(CString(strPath.c_str()));
+	//strPath = strFolder + "hid.32.dll";
+	//LoadLibrary(CString(strPath.c_str()));
+	int ist = m_pdd->DD_btn(0);
 
 	InitBuffTriggers();
 #if MACRO
