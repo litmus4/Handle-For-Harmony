@@ -18,8 +18,9 @@
 #endif
 
 #define CHANGE_VK VK_F6
-#define MACRO 0
+#define MACRO 1
 #define MACRO_VK 0x46
+#define MACRO2_VK VK_OEM_3
 #define SUN 1
 #define SUNSET_VK 0x43
 #define FLY 1
@@ -220,6 +221,7 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 	m_iCurNormalTickNum = -1;
 	m_iNormalClickSwQue = 0;
 	m_bMacroDown = false;
+	m_bMacro2 = false;
 }
 
 void CJReverseDlg::DoDataExchange(CDataExchange* pDX)
@@ -351,8 +353,9 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			}
 			if (!s_pDlg->m_bRevert && s_pDlg->m_bMacroDown)
 			{
-				s_pDlg->Input(MACRO_VK, false);
+				s_pDlg->Input((s_pDlg->m_bMacro2 ? MACRO2_VK : MACRO_VK), false);
 				s_pDlg->m_bMacroDown = false;
+				s_pDlg->m_bMacro2 = false;
 			}
 			break;
 #if FLY
@@ -412,7 +415,15 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 #endif
 		case 0x48://H
 			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
-				s_pDlg->Input(0x54/*T*/, true);
+			{
+				//s_pDlg->Input(0x54/*T*/, true);
+				if (s_pDlg->m_bMacroDown)
+				{
+					s_pDlg->Input((s_pDlg->m_bMacro2 ? MACRO2_VK : MACRO_VK), false);
+					s_pDlg->m_bMacroDown = false;
+				}
+				s_pDlg->m_bMacro2 = !s_pDlg->m_bMacro2;
+			}
 			break;
 		case 0x5A://Z
 			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
@@ -437,7 +448,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			//	s_pDlg->Input(s_pDlg->HookToInputVk(hookStruct->vkCode), true);
 			break;
 		case VK_OEM_3://`
-			s_pDlg->Input(VK_OEM_2, true);
+			//s_pDlg->Input(VK_OEM_2, true);
 			break;
 		}
 	}
@@ -501,7 +512,9 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 #endif
 		case 0x48://H
 			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
-				s_pDlg->Input(0x54/*T*/, false);
+			{
+				//s_pDlg->Input(0x54/*T*/, false);
+			}
 			break;
 		case 0x5A://Z
 		case 0x58://X
@@ -510,7 +523,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			//	s_pDlg->Input(s_pDlg->HookToInputVk(hookStruct->vkCode), false);
 			break;
 		case VK_OEM_3://`
-			s_pDlg->Input(VK_OEM_2, false);
+			//s_pDlg->Input(VK_OEM_2, false);
 			break;
 		}
 	}
@@ -604,6 +617,7 @@ int CJReverseDlg::VkToDDCode(DWORD dwVk)
 	case 0x39: return 209;//9
 	case 0x54: return 305;//T
 	case VK_OEM_2: return 510;///(b)
+	case VK_OEM_3: return 200;//`
 	}
 	return -1;
 }
@@ -622,8 +636,9 @@ void CJReverseDlg::OnBnClickedOk()
 	}
 	if (!m_bRevert && m_bMacroDown)
 	{
-		Input(MACRO_VK, false);
+		Input((m_bMacro2 ? MACRO2_VK : MACRO_VK), false);
 		m_bMacroDown = false;
+		m_bMacro2 = false;
 	}
 }
 
@@ -733,7 +748,7 @@ void CJReverseDlg::OnTimer(UINT nIDEvent)
 	if (m_bRevert)
 	{
 		m_bMacroDown = !m_bMacroDown;
-		Input(MACRO_VK, m_bMacroDown);
+		Input((m_bMacro2 ? MACRO2_VK : MACRO_VK), m_bMacroDown);
 	}
 #endif
 

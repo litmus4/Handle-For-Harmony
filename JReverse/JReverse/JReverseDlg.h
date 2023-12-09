@@ -181,6 +181,7 @@ protected:
 	int m_iCurNormalTickNum;
 	int m_iNormalClickSwQue;
 	bool m_bMacroDown;
+	bool m_bMacro2;
 };
 
 void CALLBACK callBackTimer(UINT wTimerID, UINT msg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
