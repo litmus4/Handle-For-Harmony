@@ -18,11 +18,14 @@
 #endif
 
 #define CHANGE_VK VK_F6
-#define MACRO 1
+#define MACRO 0
 #define MACRO_VK 0x46
 #define MACRO2_VK VK_OEM_3
-#define SUN 1
+#define SUN 0
 #define SUNSET_VK 0x43
+#define MOON 1
+#define MOONFIVE1_VK 0x48
+#define MOONFIVE2_VK 0x54
 #define FLY 1
 #define FLYF2L_VK 0x39
 
@@ -203,6 +206,12 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 	m_iSunsetNum = 10;
 	m_iCurSunsetNum = -1;
 
+	m_iMoonCooldownTickNum = 25;
+	m_iCurMoonCooldownTickNum = -1;
+	m_bMoonFiveDown = false;
+	m_iMoonFiveNum = 10;
+	m_iCurMoonFiveNum = -1;
+
 	m_iFlyDelayTickNum = 2;
 	m_bLeftAlt = false;
 	m_bLeftAltEx = false;
@@ -346,6 +355,7 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			if (!s_pDlg->m_bRevert)
 			{
 				s_pDlg->ResetSunTrigger();
+				s_pDlg->ResetMoonTrigger();
 				s_pDlg->m_bVehicleFly = false;
 				s_pDlg->m_iVehicleMove = 0;
 				s_pDlg->ResetTimers();
@@ -616,6 +626,7 @@ int CJReverseDlg::VkToDDCode(DWORD dwVk)
 	case 0x44: return 403;//D
 	case 0x39: return 209;//9
 	case 0x54: return 305;//T
+	case 0x48: return 406;//H
 	case VK_OEM_2: return 510;///(b)
 	case VK_OEM_3: return 200;//`
 	}
@@ -629,6 +640,7 @@ void CJReverseDlg::OnBnClickedOk()
 	if (!m_bRevert)
 	{
 		ResetSunTrigger();
+		ResetMoonTrigger();
 		m_bVehicleFly = false;
 		m_iVehicleMove = 0;
 		ResetTimers();
@@ -736,6 +748,10 @@ void CJReverseDlg::OnTimer(UINT nIDEvent)
 		if (m_bSecondMode)
 			TickSunTrigger();
 #endif
+#if MOON
+		if (m_bSecondMode)
+			TickMoonTrigger();
+#endif
 #if FLY
 		else
 			TickFlyHelper();
@@ -780,7 +796,7 @@ const TCHAR* CJReverseDlg::GetCachePath(const TCHAR* wszName)
 			i++;
 		} while (i < 100 && *(wszBuf + i) != 0);
 
-		TCHAR cDrive = 'N';
+		TCHAR cDrive = 'L';
 		for (; cDrive >= 'D'; --cDrive)
 		{
 			if (setDrives.find(cDrive) != setDrives.end())
@@ -1084,6 +1100,106 @@ void CJReverseDlg::ResetSunTrigger()
 	{
 		Input(SUNSET_VK, false);
 		m_bSunsetDown = false;
+	}
+}
+
+void CJReverseDlg::TickMoonTrigger()
+{
+	//多次按加速
+	if (m_iCurMoonFiveNum >= 0)
+	{
+		m_bMoonFiveDown = !m_bMoonFiveDown;
+		Input(MOONFIVE1_VK, m_bMoonFiveDown);
+		Input(MOONFIVE2_VK, m_bMoonFiveDown);
+		if (!m_bMoonFiveDown)
+		{
+			m_iCurMoonFiveNum++;
+			if (m_iCurMoonFiveNum >= m_iMoonFiveNum)
+				m_iCurMoonFiveNum = -1;
+		}
+	}
+
+	if (m_iCurMoonCooldownTickNum >= 0)
+	{
+		m_iCurMoonCooldownTickNum++;
+		if (m_iCurMoonCooldownTickNum >= m_iMoonCooldownTickNum)
+			m_iCurMoonCooldownTickNum = -1;
+		return;
+	}
+	wchar_t file[100];
+
+	//读条
+	bool bReadingShield = false, bReadingLeft = false;
+
+	//读条盾牌
+	SSunBmpParam mrsParam;
+	mrsParam.wstrFileName = L"moonrs";
+	mrsParam.ptLeftTop.x = 560;//550/561
+	mrsParam.ptLeftTop.y = 161;//162
+	mrsParam.lWidth = 3;
+	mrsParam.lHeight = 3;
+	mrsParam.iSampleX = 1;
+	mrsParam.iSampleY = 1;
+	mrsParam.cRedLow = 110;//128-138
+	mrsParam.cGreenLow = 170;//182-201
+	mrsParam.cBlueLow = 160;//178-188
+	mrsParam.cRedHigh = 146;
+	mrsParam.cGreenHigh = 210;
+	mrsParam.cBlueHigh = 196;
+
+	CScreenShot srl;
+	memcpy(file, GetCachePath(mrsParam.wstrFileName.c_str()), 100);
+	if (srl.capture_and_savetobmp(mrsParam.ptLeftTop,	//left top
+		mrsParam.ptLeftTop.x + mrsParam.lWidth, mrsParam.ptLeftTop.y + mrsParam.lHeight //right bottom
+		, file))
+	{
+		if (IsSunBmpCorrect(file, mrsParam))
+			bReadingShield = true;
+	}
+
+	//读条左
+	SSunBmpParam mrlParam;
+	mrlParam.wstrFileName = L"moonrl";
+	mrlParam.ptLeftTop.x = 577;//567/578
+	mrlParam.ptLeftTop.y = 168;//169
+	mrlParam.lWidth = 3;
+	mrlParam.lHeight = 3;
+	mrlParam.iSampleX = 1;
+	mrlParam.iSampleY = 1;
+	mrlParam.cRedLow = 240;//255
+	mrlParam.cGreenLow = 93;//103-113
+	mrlParam.cBlueLow = 36;//46-56
+	mrlParam.cRedHigh = 255;
+	mrlParam.cGreenHigh = 123;
+	mrlParam.cBlueHigh = 66;
+
+	CScreenShot srr;
+	memcpy(file, GetCachePath(mrlParam.wstrFileName.c_str()), 100);
+	if (srr.capture_and_savetobmp(mrlParam.ptLeftTop,	//left top
+		mrlParam.ptLeftTop.x + mrlParam.lWidth, mrlParam.ptLeftTop.y + mrlParam.lHeight //right bottom
+		, file))
+	{
+		if (IsSunBmpCorrect(file, mrlParam))
+			bReadingLeft = true;
+	}
+
+	//判断读条
+	if (!bReadingShield || !bReadingLeft) return;
+
+	PlaySound(L"JRSTErDuanTiao.wav", NULL, SND_ASYNC | SND_NODEFAULT);//FLAGJK
+	m_iCurMoonCooldownTickNum = 0;
+}
+
+void CJReverseDlg::ResetMoonTrigger()
+{
+	m_iCurMoonCooldownTickNum = -1;
+
+	m_iCurMoonFiveNum = -1;
+	if (m_bMoonFiveDown)
+	{
+		Input(MOONFIVE1_VK, false);
+		Input(MOONFIVE2_VK, false);
+		m_bMoonFiveDown = false;
 	}
 }
 

@@ -134,6 +134,9 @@ public:
 	bool IsSunBmpCorrect(const TCHAR* wszFile, const SSunBmpParam& param);
 	void ResetSunTrigger();
 
+	void TickMoonTrigger();
+	void ResetMoonTrigger();
+
 	void TickFlyHelper();
 	void StartHuitouTimer(ETimerType eTimerType);
 	void ResetTimers();
@@ -161,6 +164,12 @@ protected:
 	bool m_bSunsetDown;
 	int m_iSunsetNum;
 	int m_iCurSunsetNum;
+
+	int m_iMoonCooldownTickNum;
+	int m_iCurMoonCooldownTickNum;
+	bool m_bMoonFiveDown;
+	int m_iMoonFiveNum;
+	int m_iCurMoonFiveNum;
 
 	std::list<int> m_lisFlyForeQueue;
 	int m_iFlyDelayTickNum;
