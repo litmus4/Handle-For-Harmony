@@ -1147,9 +1147,9 @@ void CJReverseDlg::TickMoonTrigger()
 	mrsParam.cGreenHigh = 210;
 	mrsParam.cBlueHigh = 196;
 
-	CScreenShot srl;
+	CScreenShot mrs;
 	memcpy(file, GetCachePath(mrsParam.wstrFileName.c_str()), 100);
-	if (srl.capture_and_savetobmp(mrsParam.ptLeftTop,	//left top
+	if (mrs.capture_and_savetobmp(mrsParam.ptLeftTop,	//left top
 		mrsParam.ptLeftTop.x + mrsParam.lWidth, mrsParam.ptLeftTop.y + mrsParam.lHeight //right bottom
 		, file))
 	{
@@ -1173,9 +1173,9 @@ void CJReverseDlg::TickMoonTrigger()
 	mrlParam.cGreenHigh = 123;
 	mrlParam.cBlueHigh = 66;
 
-	CScreenShot srr;
+	CScreenShot mrl;
 	memcpy(file, GetCachePath(mrlParam.wstrFileName.c_str()), 100);
-	if (srr.capture_and_savetobmp(mrlParam.ptLeftTop,	//left top
+	if (mrl.capture_and_savetobmp(mrlParam.ptLeftTop,	//left top
 		mrlParam.ptLeftTop.x + mrlParam.lWidth, mrlParam.ptLeftTop.y + mrlParam.lHeight //right bottom
 		, file))
 	{
@@ -1186,8 +1186,81 @@ void CJReverseDlg::TickMoonTrigger()
 	//判断读条
 	if (!bReadingShield || !bReadingLeft) return;
 
-	PlaySound(L"JRSTErDuanTiao.wav", NULL, SND_ASYNC | SND_NODEFAULT);//FLAGJK
-	m_iCurMoonCooldownTickNum = 0;
+	//9
+	SSunBmpParam m9Param;
+	m9Param.wstrFileName = L"moon9";
+	m9Param.ptLeftTop.x = 662;//?/663
+	m9Param.ptLeftTop.y = 166;//?/167
+	m9Param.lWidth = 3;
+	m9Param.lHeight = 3;
+	m9Param.iSampleX = 1;
+	m9Param.iSampleY = 1;
+	m9Param.cRedLow = 210;//228
+	m9Param.cGreenLow = 210;//228
+	m9Param.cBlueLow = 200;//228
+	m9Param.cRedHigh = 255;
+	m9Param.cGreenHigh = 255;
+	m9Param.cBlueHigh = 255;
+
+	CScreenShot m9;
+	memcpy(file, GetCachePath(m9Param.wstrFileName.c_str()), 100);
+	if (m9.capture_and_savetobmp(m9Param.ptLeftTop,	//left top
+		m9Param.ptLeftTop.x + m9Param.lWidth, m9Param.ptLeftTop.y + m9Param.lHeight //right bottom
+		, file))
+	{
+		if (IsSunBmpCorrect(file, m9Param))
+		{
+			//播放声音“二段跳”
+			PlaySound(L"JRSTErDuanTiao.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+
+			m_iCurMoonCooldownTickNum = 0;
+			return;
+		}
+	}
+
+	//7/3
+	SSunBmpParam m7Param;
+	m7Param.wstrFileName = L"moon7";
+	m7Param.ptLeftTop.x = 666;//?/667
+	m7Param.ptLeftTop.y = 170;//?/171
+	m7Param.lWidth = 3;
+	m7Param.lHeight = 3;
+	m7Param.iSampleX = 1;
+	m7Param.iSampleY = 1;
+	m7Param.cRedLow = 210;//228
+	m7Param.cGreenLow = 210;//228
+	m7Param.cBlueLow = 210;//228
+	m7Param.cRedHigh = 255;
+	m7Param.cGreenHigh = 255;
+	m7Param.cBlueHigh = 255;
+
+	CScreenShot m7;
+	memcpy(file, GetCachePath(m7Param.wstrFileName.c_str()), 100);
+	if (m7.capture_and_savetobmp(m7Param.ptLeftTop,	//left top
+		m7Param.ptLeftTop.x + m7Param.lWidth, m7Param.ptLeftTop.y + m7Param.lHeight //right bottom
+		, file))
+	{
+		if (IsSunBmpCorrect(file, m7Param))
+		{
+			//播放声音“进来”//FLAGJK
+			PlaySound(L"JRSTBuDong.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+
+			m_iCurMoonCooldownTickNum = 0;
+			return;
+		}
+		else
+		{
+			//播放声音“出去”
+			PlaySound(L"JRSTFuYao.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+
+			m_bMoonFiveDown = !m_bMoonFiveDown;
+			Input(MOONFIVE1_VK, m_bMoonFiveDown);
+			Input(MOONFIVE2_VK, m_bMoonFiveDown);
+			m_iCurMoonFiveNum = 0;
+
+			m_iCurMoonCooldownTickNum = 0;
+		}
+	}
 }
 
 void CJReverseDlg::ResetMoonTrigger()
