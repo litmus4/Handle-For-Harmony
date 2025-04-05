@@ -211,6 +211,7 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 	m_bMoonFiveDown = false;
 	m_iMoonFiveNum = 10;
 	m_iCurMoonFiveNum = -1;
+	m_iMoonFiveOrder = 0;
 
 	m_iFlyDelayTickNum = 2;
 	m_bLeftAlt = false;
@@ -1245,6 +1246,15 @@ void CJReverseDlg::TickMoonTrigger()
 			//播放声音“进来”//FLAGJK
 			PlaySound(L"JRSTBuDong.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 
+			m_iMoonFiveOrder++;
+			if (m_iMoonFiveOrder == 2)
+			{
+				m_bMoonFiveDown = !m_bMoonFiveDown;
+				Input(MOONFIVE1_VK, m_bMoonFiveDown);
+				Input(MOONFIVE2_VK, m_bMoonFiveDown);
+				m_iCurMoonFiveNum = 0;
+			}
+
 			m_iCurMoonCooldownTickNum = 0;
 			return;
 		}
@@ -1253,10 +1263,14 @@ void CJReverseDlg::TickMoonTrigger()
 			//播放声音“出去”
 			PlaySound(L"JRSTFuYao.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 
-			m_bMoonFiveDown = !m_bMoonFiveDown;
-			Input(MOONFIVE1_VK, m_bMoonFiveDown);
-			Input(MOONFIVE2_VK, m_bMoonFiveDown);
-			m_iCurMoonFiveNum = 0;
+			m_iMoonFiveOrder++;
+			if (m_iMoonFiveOrder == 2)
+			{
+				m_bMoonFiveDown = !m_bMoonFiveDown;
+				Input(MOONFIVE1_VK, m_bMoonFiveDown);
+				Input(MOONFIVE2_VK, m_bMoonFiveDown);
+				m_iCurMoonFiveNum = 0;
+			}
 
 			m_iCurMoonCooldownTickNum = 0;
 		}
@@ -1268,6 +1282,7 @@ void CJReverseDlg::ResetMoonTrigger()
 	m_iCurMoonCooldownTickNum = -1;
 
 	m_iCurMoonFiveNum = -1;
+	m_iMoonFiveOrder = 0;
 	if (m_bMoonFiveDown)
 	{
 		Input(MOONFIVE1_VK, false);

@@ -170,6 +170,7 @@ protected:
 	bool m_bMoonFiveDown;
 	int m_iMoonFiveNum;
 	int m_iCurMoonFiveNum;
+	int m_iMoonFiveOrder;
 
 	std::list<int> m_lisFlyForeQueue;
 	int m_iFlyDelayTickNum;
