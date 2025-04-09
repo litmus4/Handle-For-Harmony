@@ -24,8 +24,10 @@
 #define SUN 0
 #define SUNSET_VK 0x43
 #define MOON 1
-#define MOONFIVE1_VK 0x48
-#define MOONFIVE2_VK 0x54
+#define MOONFIVE11_VK 0x48
+#define MOONFIVE12_VK 0x54
+#define MOONFIVE21_VK VK_LMENU
+#define MOONFIVE22_VK 0x53
 #define FLY 1
 #define FLYF2L_VK 0x39
 
@@ -212,6 +214,10 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 	m_iMoonFiveNum = 10;
 	m_iCurMoonFiveNum = -1;
 	m_iMoonFiveOrder = 0;
+	m_iMoonFive2Step = 0;
+	m_iMoonFive2Num = 5;
+	m_iCurMoonFive2Num = -1;
+	m_iMoonFive2ReadyNum = 2;
 
 	m_iFlyDelayTickNum = 2;
 	m_bLeftAlt = false;
@@ -630,6 +636,8 @@ int CJReverseDlg::VkToDDCode(DWORD dwVk)
 	case 0x48: return 406;//H
 	case VK_OEM_2: return 510;///(b)
 	case VK_OEM_3: return 200;//`
+	case VK_LMENU: return 602;//Alt
+	case 0x53: return 402;//S
 	}
 	return -1;
 }
@@ -1110,14 +1118,43 @@ void CJReverseDlg::TickMoonTrigger()
 	if (m_iCurMoonFiveNum >= 0)
 	{
 		m_bMoonFiveDown = !m_bMoonFiveDown;
-		Input(MOONFIVE1_VK, m_bMoonFiveDown);
-		Input(MOONFIVE2_VK, m_bMoonFiveDown);
+		Input(MOONFIVE11_VK, m_bMoonFiveDown);
+		Input(MOONFIVE12_VK, m_bMoonFiveDown);
 		if (!m_bMoonFiveDown)
 		{
 			m_iCurMoonFiveNum++;
 			if (m_iCurMoonFiveNum >= m_iMoonFiveNum)
 				m_iCurMoonFiveNum = -1;
 		}
+	}
+
+	//多次按下后
+	if (m_iCurMoonFive2Num >= 0)
+	{
+		if (m_iMoonFive2ReadyNum == 0 || m_iCurMoonFive2Num >= m_iMoonFive2ReadyNum)
+		{
+			m_iMoonFive2Step++;
+			if (m_iMoonFive2Step == 3) m_iMoonFive2Step = 0;
+
+			if (m_iMoonFive2Step == 1)
+				Input(MOONFIVE21_VK, true);
+			else if (m_iMoonFive2Step == 2)
+				Input(MOONFIVE22_VK, true);
+			else
+			{
+				Input(MOONFIVE21_VK, false);
+				Input(MOONFIVE22_VK, false);
+			}
+
+			if (m_iMoonFive2Step == 0)
+			{
+				m_iCurMoonFive2Num++;
+				if (m_iCurMoonFive2Num >= m_iMoonFive2Num)
+					m_iCurMoonFive2Num = -1;
+			}
+		}
+		else
+			m_iCurMoonFive2Num++;
 	}
 
 	if (m_iCurMoonCooldownTickNum >= 0)
@@ -1244,15 +1281,25 @@ void CJReverseDlg::TickMoonTrigger()
 		if (IsSunBmpCorrect(file, m7Param))
 		{
 			//播放声音“进来”//FLAGJK
-			PlaySound(L"JRSTBuDong.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+			PlaySound(L"JRMTJinLai.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 
 			m_iMoonFiveOrder++;
-			if (m_iMoonFiveOrder == 2)
+			if (m_iMoonFiveOrder == 1)
 			{
 				m_bMoonFiveDown = !m_bMoonFiveDown;
-				Input(MOONFIVE1_VK, m_bMoonFiveDown);
-				Input(MOONFIVE2_VK, m_bMoonFiveDown);
+				Input(MOONFIVE11_VK, m_bMoonFiveDown);
+				Input(MOONFIVE12_VK, m_bMoonFiveDown);
 				m_iCurMoonFiveNum = 0;
+			}
+			else if (m_iMoonFiveOrder == 2)
+			{
+				if (m_iMoonFive2ReadyNum == 0)
+				{
+					m_iMoonFive2Step++;
+					if (m_iMoonFive2Step == 3) m_iMoonFive2Step = 0;
+					Input(MOONFIVE21_VK, true);
+				}
+				m_iCurMoonFive2Num = 0;
 			}
 
 			m_iCurMoonCooldownTickNum = 0;
@@ -1261,15 +1308,25 @@ void CJReverseDlg::TickMoonTrigger()
 		else
 		{
 			//播放声音“出去”
-			PlaySound(L"JRSTFuYao.wav", NULL, SND_ASYNC | SND_NODEFAULT);
+			PlaySound(L"JRMTChuQu.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 
 			m_iMoonFiveOrder++;
-			if (m_iMoonFiveOrder == 2)
+			if (m_iMoonFiveOrder == 1)
 			{
 				m_bMoonFiveDown = !m_bMoonFiveDown;
-				Input(MOONFIVE1_VK, m_bMoonFiveDown);
-				Input(MOONFIVE2_VK, m_bMoonFiveDown);
+				Input(MOONFIVE11_VK, m_bMoonFiveDown);
+				Input(MOONFIVE12_VK, m_bMoonFiveDown);
 				m_iCurMoonFiveNum = 0;
+			}
+			else if (m_iMoonFiveOrder == 2)
+			{
+				if (m_iMoonFive2ReadyNum == 0)
+				{
+					m_iMoonFive2Step++;
+					if (m_iMoonFive2Step == 3) m_iMoonFive2Step = 0;
+					Input(MOONFIVE21_VK, true);
+				}
+				m_iCurMoonFive2Num = 0;
 			}
 
 			m_iCurMoonCooldownTickNum = 0;
@@ -1285,9 +1342,17 @@ void CJReverseDlg::ResetMoonTrigger()
 	m_iMoonFiveOrder = 0;
 	if (m_bMoonFiveDown)
 	{
-		Input(MOONFIVE1_VK, false);
-		Input(MOONFIVE2_VK, false);
+		Input(MOONFIVE11_VK, false);
+		Input(MOONFIVE12_VK, false);
 		m_bMoonFiveDown = false;
+	}
+
+	m_iCurMoonFive2Num = -1;
+	if (m_iMoonFive2Step != 0)
+	{
+		Input(MOONFIVE21_VK, false);
+		Input(MOONFIVE22_VK, false);
+		m_iMoonFive2Step = 0;
 	}
 }
 

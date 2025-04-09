@@ -171,6 +171,10 @@ protected:
 	int m_iMoonFiveNum;
 	int m_iCurMoonFiveNum;
 	int m_iMoonFiveOrder;
+	int m_iMoonFive2Step;
+	int m_iMoonFive2Num;
+	int m_iCurMoonFive2Num;
+	int m_iMoonFive2ReadyNum;
 
 	std::list<int> m_lisFlyForeQueue;
 	int m_iFlyDelayTickNum;
