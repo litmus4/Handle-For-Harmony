@@ -1172,7 +1172,7 @@ void CJReverseDlg::TickMoonTrigger()
 	//读条盾牌
 	SSunBmpParam mrsParam;
 	mrsParam.wstrFileName = L"moonrs";
-	mrsParam.ptLeftTop.x = 560;//550/561
+	mrsParam.ptLeftTop.x = 549;//550/561
 	mrsParam.ptLeftTop.y = 161;//162
 	mrsParam.lWidth = 3;
 	mrsParam.lHeight = 3;
@@ -1198,7 +1198,7 @@ void CJReverseDlg::TickMoonTrigger()
 	//读条左
 	SSunBmpParam mrlParam;
 	mrlParam.wstrFileName = L"moonrl";
-	mrlParam.ptLeftTop.x = 577;//567/578
+	mrlParam.ptLeftTop.x = 566;//567/578
 	mrlParam.ptLeftTop.y = 168;//169
 	mrlParam.lWidth = 3;
 	mrlParam.lHeight = 3;
@@ -1227,7 +1227,7 @@ void CJReverseDlg::TickMoonTrigger()
 	//9
 	SSunBmpParam m9Param;
 	m9Param.wstrFileName = L"moon9";
-	m9Param.ptLeftTop.x = 662;//?/663
+	m9Param.ptLeftTop.x = 651;//652?/663
 	m9Param.ptLeftTop.y = 166;//?/167
 	m9Param.lWidth = 3;
 	m9Param.lHeight = 3;
@@ -1259,7 +1259,7 @@ void CJReverseDlg::TickMoonTrigger()
 	//7/3
 	SSunBmpParam m7Param;
 	m7Param.wstrFileName = L"moon7";
-	m7Param.ptLeftTop.x = 666;//?/667
+	m7Param.ptLeftTop.x = 655;//656?/667
 	m7Param.ptLeftTop.y = 170;//?/171
 	m7Param.lWidth = 3;
 	m7Param.lHeight = 3;
@@ -1280,7 +1280,7 @@ void CJReverseDlg::TickMoonTrigger()
 	{
 		if (IsSunBmpCorrect(file, m7Param))
 		{
-			//播放声音“进来”//FLAGJK
+			//播放声音“进来”
 			PlaySound(L"JRMTJinLai.wav", NULL, SND_ASYNC | SND_NODEFAULT);
 
 			m_iMoonFiveOrder++;
