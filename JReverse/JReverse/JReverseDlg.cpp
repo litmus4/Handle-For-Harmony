@@ -19,8 +19,8 @@
 
 #define CHANGE_VK VK_F6
 #define MACRO 0
-#define MACRO_VK 0x46
-#define MACRO2_VK VK_OEM_3
+#define MACRO_VK 0x32
+#define MACRO2_VK 0x32
 #define SUN 0
 #define SUNSET_VK 0x43
 #define MOON 1
@@ -301,11 +301,11 @@ BOOL CJReverseDlg::OnInitDialog()
 	int ist = m_pdd->DD_btn(0);
 
 	InitBuffTriggers();
-#if MACRO
-	SetTimer(0, 50, 0);
-#else
+//#if MACRO
+//	SetTimer(0, 50, 0);
+//#else
 	SetTimer(0, 100, 0);
-#endif
+//#endif
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
