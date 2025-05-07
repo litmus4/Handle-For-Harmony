@@ -12,6 +12,7 @@
 #include "mmsystem.h"
 #include <string>
 #include <set>
+#pragma comment(lib,"winmm.lib")
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -731,7 +732,7 @@ void CJReverseDlg::InitBuffTriggers()
 	//m_vecBuffTriggers.push_back(WuHuiTrigger);
 }
 
-void CJReverseDlg::OnTimer(UINT nIDEvent)
+void CJReverseDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	std::vector<SBuffTrigger>::iterator iter = m_vecBuffTriggers.begin();
 	for (; iter != m_vecBuffTriggers.end(); iter++)

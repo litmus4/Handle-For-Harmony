@@ -121,7 +121,7 @@ public:
 	afx_msg void OnBnClickedSecondMode();
 
 	void InitBuffTriggers();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	const TCHAR* GetCachePath(const TCHAR* wszName);
 	bool IsBuffBmpCorrect(const TCHAR* wszFile, const SBuffTrigger& trigger);
 	void SetInputTrigger(bool bInput);
