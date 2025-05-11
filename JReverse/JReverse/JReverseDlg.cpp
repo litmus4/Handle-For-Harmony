@@ -22,6 +22,7 @@
 #define MACRO 0
 #define MACRO_VK 0x32
 #define MACRO2_VK 0x32
+#define FYTORAGE_VK VK_F7
 #define SUN 0
 #define SUNSET_VK 0x43
 #define MOON 1
@@ -29,7 +30,7 @@
 #define MOONFIVE12_VK 0x54
 #define MOONFIVE21_VK VK_LMENU
 #define MOONFIVE22_VK 0x53
-#define FLY 1
+#define FLY 0
 #define FLYF2L_VK 0x39
 
 
@@ -200,8 +201,12 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 
 	m_bRevert = false;
 	m_bSecondMode = false;
+	m_bSecondOffset = false;
 
 	m_bInputTrigger = false;
+
+	m_bFyToRageAlways = false;
+	m_bFyToRageDown = false;
 
 	m_iSunCooldownTickNum = 30;
 	m_iCurSunCooldownTickNum = -1;
@@ -254,6 +259,7 @@ BEGIN_MESSAGE_MAP(CJReverseDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CJReverseDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_CHECK, &CJReverseDlg::OnBnClickedSecondMode)
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_CHECK2, &CJReverseDlg::OnBnClickedSecondOffset)
 END_MESSAGE_MAP()
 
 
@@ -362,6 +368,13 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 			//s_pDlg->SetInputTrigger(s_pDlg->m_bRevert);
 			if (!s_pDlg->m_bRevert)
 			{
+				if (s_pDlg->m_bFyToRageDown)
+				{
+					s_pDlg->Input(FYTORAGE_VK, false);
+					s_pDlg->m_bFyToRageDown = false;
+				}
+				s_pDlg->m_bFyToRageAlways = false;
+
 				s_pDlg->ResetSunTrigger();
 				s_pDlg->ResetMoonTrigger();
 				s_pDlg->m_bVehicleFly = false;
@@ -464,7 +477,19 @@ LRESULT CJReverseDlg::KeyboardProc(int iCode, WPARAM wParam, LPARAM lParam)
 		case 0x43://C
 			//if (s_pDlg->m_bRevert)
 			//	s_pDlg->Input(s_pDlg->HookToInputVk(hookStruct->vkCode), true);
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
+				s_pDlg->m_bFyToRageAlways = true;
 			break;
+		case VK_SPACE://空格
+			if (s_pDlg->m_bRevert && !s_pDlg->m_bSecondMode)
+			{
+				if (s_pDlg->m_bFyToRageDown)
+				{
+					s_pDlg->Input(FYTORAGE_VK, false);
+					s_pDlg->m_bFyToRageDown = false;
+				}
+				s_pDlg->m_bFyToRageAlways = false;
+			}
 		case VK_OEM_3://`
 			//s_pDlg->Input(VK_OEM_2, true);
 			break;
@@ -639,6 +664,8 @@ int CJReverseDlg::VkToDDCode(DWORD dwVk)
 	case VK_OEM_3: return 200;//`
 	case VK_LMENU: return 602;//Alt
 	case 0x53: return 402;//S
+	case VK_F7: return 107;//F7
+	case VK_SPACE: return 603;//空格
 	}
 	return -1;
 }
@@ -649,6 +676,13 @@ void CJReverseDlg::OnBnClickedOk()
 	m_btnOK.SetWindowText(m_bRevert ? _T("关闭") : _T("确定"));
 	if (!m_bRevert)
 	{
+		if (m_bFyToRageDown)
+		{
+			Input(FYTORAGE_VK, false);
+			m_bFyToRageDown = false;
+		}
+		m_bFyToRageAlways = false;
+
 		ResetSunTrigger();
 		ResetMoonTrigger();
 		m_bVehicleFly = false;
@@ -685,6 +719,12 @@ void CJReverseDlg::OnBnClickedSecondMode()
 		ResetTimers();
 		((CStatic*)GetDlgItem(IDC_STATIC))->SetWindowText(_T(""));
 	}
+}
+
+void CJReverseDlg::OnBnClickedSecondOffset()
+{
+	int iChecked = ((CButton*)GetDlgItem(IDC_CHECK2))->GetCheck();
+	m_bSecondOffset = (iChecked == 1);
 }
 
 void CJReverseDlg::InitBuffTriggers()
@@ -754,18 +794,24 @@ void CJReverseDlg::OnTimer(UINT_PTR nIDEvent)
 
 	if (m_bRevert)
 	{
-#if SUN
 		if (m_bSecondMode)
+#if SUN
 			TickSunTrigger();
 #endif
 #if MOON
-		if (m_bSecondMode)
 			TickMoonTrigger();
 #endif
-#if FLY
 		else
+		{
+			if (m_bFyToRageAlways)
+			{
+				m_bFyToRageDown = !m_bFyToRageDown;
+				Input(FYTORAGE_VK, m_bFyToRageDown);
+			}
+#if FLY
 			TickFlyHelper();
 #endif
+		}
 	}
 
 	TickNormalChangeEx();
@@ -1173,7 +1219,7 @@ void CJReverseDlg::TickMoonTrigger()
 	//读条盾牌
 	SSunBmpParam mrsParam;
 	mrsParam.wstrFileName = L"moonrs";
-	mrsParam.ptLeftTop.x = 549;//550/561
+	mrsParam.ptLeftTop.x = (!m_bSecondOffset ? 549 : 560);//550/561
 	mrsParam.ptLeftTop.y = 161;//162
 	mrsParam.lWidth = 3;
 	mrsParam.lHeight = 3;
@@ -1199,7 +1245,7 @@ void CJReverseDlg::TickMoonTrigger()
 	//读条左
 	SSunBmpParam mrlParam;
 	mrlParam.wstrFileName = L"moonrl";
-	mrlParam.ptLeftTop.x = 566;//567/578
+	mrlParam.ptLeftTop.x = (!m_bSecondOffset ? 566 : 577);//567/578
 	mrlParam.ptLeftTop.y = 168;//169
 	mrlParam.lWidth = 3;
 	mrlParam.lHeight = 3;
@@ -1228,8 +1274,8 @@ void CJReverseDlg::TickMoonTrigger()
 	//9
 	SSunBmpParam m9Param;
 	m9Param.wstrFileName = L"moon9";
-	m9Param.ptLeftTop.x = 651;//652?/663
-	m9Param.ptLeftTop.y = 166;//?/167
+	m9Param.ptLeftTop.x = (!m_bSecondOffset ? 651 : 662);//652/663
+	m9Param.ptLeftTop.y = 166;//167
 	m9Param.lWidth = 3;
 	m9Param.lHeight = 3;
 	m9Param.iSampleX = 1;
@@ -1260,8 +1306,8 @@ void CJReverseDlg::TickMoonTrigger()
 	//7/3
 	SSunBmpParam m7Param;
 	m7Param.wstrFileName = L"moon7";
-	m7Param.ptLeftTop.x = 655;//656?/667
-	m7Param.ptLeftTop.y = 170;//?/171
+	m7Param.ptLeftTop.x = (!m_bSecondOffset ? 655 : 666);//656/667
+	m7Param.ptLeftTop.y = 170;//171
 	m7Param.lWidth = 3;
 	m7Param.lHeight = 3;
 	m7Param.iSampleX = 1;

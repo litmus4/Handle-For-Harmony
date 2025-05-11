@@ -119,6 +119,7 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedCancel();
 	afx_msg void OnBnClickedSecondMode();
+	afx_msg void OnBnClickedSecondOffset();
 
 	void InitBuffTriggers();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
@@ -154,10 +155,14 @@ protected:
 	bool m_bRevert;
 	CDD* m_pdd;
 	bool m_bSecondMode;
+	bool m_bSecondOffset;
 
 	std::map<std::wstring, std::wstring> m_mapCachePaths;
 	std::vector<SBuffTrigger> m_vecBuffTriggers;
 	bool m_bInputTrigger;
+
+	bool m_bFyToRageAlways;
+	bool m_bFyToRageDown;//VK_F7 107 VK_SPACE 603
 
 	int m_iSunCooldownTickNum;
 	int m_iCurSunCooldownTickNum;
