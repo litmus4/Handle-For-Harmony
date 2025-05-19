@@ -214,7 +214,7 @@ CJReverseDlg::CJReverseDlg(CWnd* pParent /*=nullptr*/)
 	m_iSunsetNum = 10;
 	m_iCurSunsetNum = -1;
 
-	m_iMoonCooldownTickNum = 25;
+	m_iMoonCooldownTickNum = 30;
 	m_iCurMoonCooldownTickNum = -1;
 	m_bMoonFiveDown = false;
 	m_iMoonFiveNum = 10;
